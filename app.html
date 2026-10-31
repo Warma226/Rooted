@@ -1,0 +1,834 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0f14">
+<title>Rooted · Labo</title>
+<link rel="icon" href="assets/logos/rooted-icone.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Rooted · thème sombre par défaut (voir assets/brand/tokens.json) */
+:root{
+  --bg:#0b0f14; --surface:#121922; --ink:#e6edf3; --muted:#8b98a8; --line:#1f2a36;
+  --accent:#ffb020; --accent-ink:#0b0f14; --accent-soft:#2a210b;
+  --open:#3ddc97; --filtered:#ffb020; --closed:#33414f;
+  --warn:#ff6b6b; --warn-soft:#3a1a1a; --term:#05080b; --term-ink:#c9d4de;
+  --display:"Chakra Petch","IBM Plex Sans",system-ui,sans-serif; --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --p1:#ffb020; --p2:#5cc8ff; --p3:#cf8be0; --p4:#3ddc97; color-scheme:dark;
+}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --bg:#f6f7f9; --surface:#ffffff; --ink:#0f141a; --muted:#56626f; --line:#dde3e9;
+  --accent:#9a5d00; --accent-ink:#ffffff; --accent-soft:#fff1d6;
+  --open:#0f7a4f; --filtered:#b7791f; --closed:#c9d2da;
+  --warn:#c4302b; --warn-soft:#fde8e7; --term:#0b0f14; --term-ink:#c9d4de;
+  --p1:#9a5d00; --p2:#1d6fd1; --p3:#8a3fa5; --p4:#0f7a4f; color-scheme:light}}
+:root[data-theme="light"]{
+  --bg:#f6f7f9; --surface:#ffffff; --ink:#0f141a; --muted:#56626f; --line:#dde3e9;
+  --accent:#9a5d00; --accent-ink:#ffffff; --accent-soft:#fff1d6;
+  --open:#0f7a4f; --filtered:#b7791f; --closed:#c9d2da;
+  --warn:#c4302b; --warn-soft:#fde8e7; --term:#0b0f14; --term-ink:#c9d4de;
+  --p1:#9a5d00; --p2:#1d6fd1; --p3:#8a3fa5; --p4:#0f7a4f; color-scheme:light}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:640px;margin:0 auto;padding-block:18px 110px;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{text-wrap:balance;margin:0}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* En-tête */
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{font-family:var(--mono);font-weight:600;font-size:21px;letter-spacing:-.02em;line-height:1.1;color:var(--ink);text-decoration:none;display:block}
+.brand .cur{display:inline-block;width:10px;height:19px;background:#ffb020;margin-left:3px;vertical-align:-3px}
+@media (prefers-reduced-motion:no-preference){.brand .cur{animation:blink 1s steps(1) infinite}@keyframes blink{50%{opacity:0}}}
+.brand small{display:block;font-family:var(--mono);font-weight:400;font-size:11px;color:var(--muted);letter-spacing:.04em;margin-top:6px}
+.sync{font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+/* Bloc scan */
+.scan{background:var(--term);color:var(--term-ink);border-radius:14px;padding:16px;font-family:var(--mono);font-size:12.5px;display:flex;flex-direction:column;gap:12px}
+.scan .cmd{opacity:.75}
+.scan .big{font-size:13px}
+.scan .big b{font-size:26px;font-family:var(--display);font-weight:700;color:var(--open);margin-right:4px}
+.grid30{display:grid;grid-template-columns:repeat(10,1fr);gap:5px}
+.cell{aspect-ratio:1;max-width:100%;border-radius:5px;border:0;background:var(--closed);color:transparent;font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;display:grid;place-items:center}
+.cell.open{background:var(--open);color:var(--accent-ink)}
+.cell.filtered{background:var(--filtered);color:#1d1406}
+.cell.today{box-shadow:0 0 0 2px var(--term),0 0 0 4px var(--term-ink)}
+.cell span{opacity:.9}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;opacity:.85}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+
+/* Carte du jour */
+.next{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.next h2{font-family:var(--display);font-weight:500;font-size:19px;line-height:1.25}
+.btn{border:0;border-radius:10px;padding:11px 16px;font-weight:600;cursor:pointer;background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* Liste des phases */
+.phase{display:flex;flex-direction:column;gap:6px}
+.phase-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:0 2px}
+.phase-h h3{font-family:var(--display);font-weight:500;font-size:15px}
+.phase-h span{font-family:var(--mono);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.days{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.day{display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:center;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line);padding:11px 12px;cursor:pointer}
+.day:first-child{border-top:0}
+.day.ctfrow{grid-template-columns:76px 1fr auto}
+.day .n{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.day .t{min-width:0;font-weight:500}
+.pill{font-family:var(--mono);font-size:10.5px;padding:3px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.pill.open{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.pill.filtered{color:var(--filtered);border-color:var(--filtered)}
+
+/* Feuille du jour */
+.sheet{position:fixed;inset:0;z-index:20;background:var(--bg);overflow-y:auto;
+  padding:calc(env(safe-area-inset-top,0px) + 14px) max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 40px) max(16px,env(safe-area-inset-left,0px))}
+.sheet-in{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.sheet-bar{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.sheet h2{font-family:var(--display);font-weight:500;font-size:22px;line-height:1.2}
+.blk{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.blk h4{margin:0;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.blk p{margin:0}
+.blk.val h4{color:var(--filtered)}
+.blk.warn{background:var(--warn-soft);border-color:transparent}
+.blk.warn h4{color:var(--warn)}
+pre{margin:4px 0 0;background:var(--term);color:var(--term-ink);font-family:var(--mono);font-size:12.5px;border-radius:9px;padding:11px 12px;overflow-x:auto;white-space:pre}
+code{font-family:var(--mono);font-size:.88em;background:var(--accent-soft);color:var(--accent);padding:1px 5px;border-radius:5px}
+.copy{align-self:flex-start;font-family:var(--mono);font-size:11px;background:none;border:1px solid var(--line);border-radius:7px;padding:4px 9px;cursor:pointer;color:var(--muted)}
+.conf{display:flex;gap:6px}
+.conf button{flex:1;border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:9px 0;font-family:var(--mono);font-weight:600;cursor:pointer}
+.conf button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.hint{font-size:12.5px;color:var(--muted)}
+textarea{width:100%;box-sizing:border-box;min-height:120px;resize:vertical;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;padding:10px}
+.status-sel{display:flex;gap:6px;flex-wrap:wrap}
+.status-sel button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 12px;cursor:pointer;font-size:13px}
+.status-sel button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* Quiz */
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.qcard h2{font-family:var(--display);font-weight:500;font-size:18px;line-height:1.3}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{text-align:left;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:11px 12px;cursor:pointer}
+.opt.good{border-color:var(--open);background:var(--accent-soft)}
+.opt.bad{border-color:var(--warn);background:var(--warn-soft)}
+.explain{font-size:14px;color:var(--muted)}
+.score{font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+/* Mémo */
+.memo-sec{display:flex;flex-direction:column;gap:6px}
+.memo-sec h3{font-family:var(--display);font-weight:500;font-size:15px;padding:0 2px}
+.tbl{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tr{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:10px;padding:9px 12px;border-top:1px solid var(--line);align-items:start}
+.tr:first-child{border-top:0}
+.tr code{background:none;padding:0;word-break:break-word}
+.tr span{font-size:13.5px;color:var(--muted)}
+.search{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;padding:10px 12px}
+
+
+/* Labo */
+.bar{height:6px;border-radius:99px;background:color-mix(in srgb,var(--term-ink) 18%,transparent);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--open);border-radius:99px}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:10px}
+.mcard{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px;cursor:pointer;min-width:0}
+.mcard h4{margin:0;font-family:var(--display);font-weight:500;font-size:17px}
+.mcard .hint{margin:0}
+.pill.diff{color:var(--ink)}
+.term{background:var(--term);color:var(--term-ink);border-radius:12px;padding:12px;font-family:var(--mono);font-size:12.5px;line-height:1.45;height:min(52vh,420px);overflow-y:auto;overflow-x:hidden;cursor:text}
+#tout div{white-space:pre-wrap;word-break:break-word}
+#tout .cmd{color:var(--term-ink);opacity:.95;font-weight:600}
+#tout .sys{opacity:.7}
+#tout .err{color:var(--warn)}
+.tline{display:flex;gap:0;align-items:baseline;flex-wrap:wrap}
+.tprompt{color:var(--open);white-space:pre-wrap;word-break:break-all}
+#tin{flex:1;min-width:6ch;background:transparent;border:0;outline:0;color:var(--term-ink);font:inherit;font-size:16px;padding:2px 0;caret-color:var(--open)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chip{flex:none;font-family:var(--mono);font-size:12px;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 10px;cursor:pointer;white-space:nowrap}
+.flagform{display:flex;gap:8px}
+.flagform .search{flex:1;min-width:0;font-family:var(--mono);font-size:14px}
+.flagform .btn:disabled{opacity:.7}
+.hlist{margin:4px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+details.blk summary{cursor:pointer}
+.fakebrowser{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:6px}
+.fb-bar{font-family:var(--mono);font-size:11.5px;background:var(--bg);color:var(--muted);padding:6px 10px;border-bottom:1px solid var(--line)}
+.fb-page{padding:12px 14px;background:var(--surface)}
+.fb-page h3{margin:0 0 4px;font-size:18px}
+.fb-page p{margin:0 0 6px}
+
+/* Barre d'onglets */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--surface);border-top:1px solid var(--line);
+  padding:8px max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 8px) max(16px,env(safe-area-inset-left,0px))}
+.tabs-in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.tab{border:0;background:none;border-radius:10px;padding:9px 4px;font-weight:600;font-size:13.5px;color:var(--muted);cursor:pointer}
+.tab[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 76px);z-index:30;background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:999px;font-size:13px}
+.note-legal{font-size:12.5px;color:var(--muted);padding:0 2px}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:up .22s ease-out}@keyframes up{from{transform:translateY(16px);opacity:.6}to{transform:none;opacity:1}}}
+</style>
+</head>
+<body>
+
+<div class="wrap" id="app">
+  <header class="top">
+    <a class="brand" href="index.html">rooted<span class="cur"></span><small>labo · hacking éthique</small></a>
+    <div class="sync" id="sync">chargement…</div>
+  </header>
+
+  <section id="view-parcours" class="wrap" style="padding:0;gap:18px">
+    <div class="scan" aria-label="Progression">
+      <div class="cmd">$ nmap --jours 1-30 moi</div>
+      <div class="big"><b id="nOpen">0</b>/30 jours terminés · <span id="nFilt">0</span> en cours</div>
+      <div class="grid30" id="grid"></div>
+      <div class="legend"><span><i style="background:var(--open)"></i>open · terminé</span><span><i style="background:var(--filtered)"></i>filtered · en cours</span><span><i style="background:var(--closed)"></i>closed · à faire</span></div>
+    </div>
+    <div class="next" id="next"></div>
+    <div id="phases" style="display:flex;flex-direction:column;gap:18px"></div>
+    <p class="note-legal">Règle n°1 : tu ne testes que tes propres appareils, les plateformes d'entraînement et les cibles explicitement autorisées.</p>
+  </section>
+
+  <section id="view-labo" hidden></section>
+  <section id="view-quiz" hidden></section>
+  <section id="view-memo" hidden></section>
+</div>
+
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheetTitle"></div>
+
+<nav class="tabs" aria-label="Sections"><div class="tabs-in">
+  <button class="tab" data-v="parcours" id="tab-parcours">Parcours</button>
+  <button class="tab" data-v="labo" id="tab-labo">Labo</button>
+  <button class="tab" data-v="quiz" id="tab-quiz">Quiz</button>
+  <button class="tab" data-v="memo" id="tab-memo">Mémo</button>
+</div></nav>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const PHASES=[
+ {n:1,name:"Fondations",days:[1,7],c:"--p1"},
+ {n:2,name:"Réseaux",days:[8,14],c:"--p2"},
+ {n:3,name:"Méthode et Web",days:[15,22],c:"--p3"},
+ {n:4,name:"Systèmes et défense",days:[23,30],c:"--p4"}];
+
+const D=[null,
+{t:"Qu'est-ce que le hacking éthique ?",ch:"1",th:"White hat, black hat, grey hat. Les métiers (pentesteur, Red, Blue, Purple Team). La triade CIA : Confidentialité, Intégrité, Disponibilité.",pr:"Crée ton compte sur TryHackMe et sur PortSwigger Web Security Academy. Écris dans ton journal pourquoi tu veux apprendre ça.",va:"Explique en deux phrases la différence entre un pirate et un pentesteur.",an:"Les compétences peuvent être les mêmes. Le pentesteur agit avec une autorisation écrite, dans un périmètre défini, pour aider à corriger."},
+{t:"La loi et l'éthique",ch:"2",th:"Accès non autorisé, périmètre (scope), règles d'engagement, divulgation responsable, bug bounty.",pr:"Lis la politique de divulgation (security.txt ou page « Responsible Disclosure ») de deux grandes entreprises : ce qui est autorisé, interdit, comment signaler.",va:"Cite trois situations où tester un système serait illégal, même avec de bonnes intentions.",an:"Tester le Wi-Fi d'un voisin, scanner le site de son école sans accord de la direction, essayer des mots de passe sur le compte de quelqu'un."},
+{t:"Installer ton laboratoire de poche",ch:"3",th:"Pourquoi Linux domine la sécurité. Terminal, shell, commande. Gestionnaire de paquets.",pr:"Installe F-Droid puis Termux, et lance :",code:"pkg update && pkg upgrade\npkg install nano curl openssh git python man\ntermux-setup-storage",va:"Tape whoami, pwd et uname -a. Explique ce que chaque commande répond.",an:"whoami : ton nom d'utilisateur. pwd : le dossier où tu es. uname -a : le système et la version du noyau."},
+{t:"Se déplacer dans Linux",ch:"4",th:"L'arborescence depuis /, chemins absolus et relatifs, . et .., les fichiers cachés.",pr:"Crée un dossier labo avec trois sous-dossiers et déplace des fichiers de l'un à l'autre.",code:"mkdir -p labo/notes labo/scans labo/rapports\ncd labo\ntouch test.txt\nmv test.txt notes/\nls -la notes",va:"Sans aide : crée labo/notes/jour4.txt, écris une phrase avec nano, affiche-la avec cat.",an:"mkdir -p labo/notes → nano labo/notes/jour4.txt (Ctrl+O, Entrée, Ctrl+X) → cat labo/notes/jour4.txt"},
+{t:"Lire, chercher, filtrer",ch:"4",th:"grep, find, le pipe |, les redirections > et >>.",pr:"Connecte-toi à OverTheWire Bandit et termine les niveaux 0 à 3.",code:"ssh bandit0@bandit.labs.overthewire.org -p 2220",va:"Explique ce que fait : cat fichier.txt | grep motdepasse > resultat.txt",an:"Elle lit le fichier, ne garde que les lignes contenant « motdepasse », et les écrit dans resultat.txt (en écrasant son contenu)."},
+{t:"Permissions et utilisateurs",ch:"5",th:"Lire rwxr-xr--, propriétaire / groupe / autres, chmod, chown, root et sudo.",pr:"Bandit niveaux 4 à 7. Crée bonjour.sh, rends-le exécutable et lance-le.",code:"nano bonjour.sh\nchmod +x bonjour.sh\n./bonjour.sh",va:"Que signifie chmod 750 script.sh ?",an:"Propriétaire : lire, écrire, exécuter (7). Groupe : lire, exécuter (5). Autres : rien (0)."},
+{t:"Bilan de semaine 1",ch:"1 à 5",th:"Relis ton journal de bord et les encadrés « À retenir ».",pr:"Bandit niveaux 8 à 10, ou rattrapage.",va:"Sans notes : la triade CIA avec un exemple par lettre, ce qu'est un périmètre, créer un fichier et changer ses permissions, chercher un mot avec grep.",an:"Si un point bloque, reprends le chapitre concerné avant de continuer. C'est de la consolidation, pas du retard."},
+{t:"Les modèles OSI et TCP/IP",ch:"6",th:"Les 7 couches OSI, les 4 couches TCP/IP, l'encapsulation.",pr:"Commence le module réseau de TryHackMe. Dessine les couches avec un protocole pour chacune.",va:"À quelle couche se situe une adresse IP ? Une adresse MAC ? HTTP ?",an:"IP : couche 3 (réseau). MAC : couche 2 (liaison). HTTP : couche 7 (application)."},
+{t:"Adresses IP, masques et sous-réseaux",ch:"6",th:"IPv4, IPv6, adresses privées et publiques, CIDR, NAT.",pr:"Note ton adresse locale puis ton adresse publique. Pourquoi sont-elles différentes ?",code:"ip addr\ncurl ifconfig.me",va:"Combien d'adresses utilisables dans 192.168.1.0/24 ?",an:"256 adresses au total, 254 utilisables (on retire l'adresse du réseau et celle de diffusion)."},
+{t:"Ports, TCP, UDP et la poignée de main",ch:"7",th:"TCP contre UDP, le three-way handshake SYN / SYN-ACK / ACK, les ports courants.",pr:"Apprends les 15 ports essentiels (onglet Mémo) et fais le quiz Réseaux.",va:"Que tourne-t-il sur les ports 22, 80, 443, 3306, 3389 ?",an:"SSH, HTTP, HTTPS, MySQL, RDP."},
+{t:"DNS, HTTP et HTTPS",ch:"7",th:"Résolution DNS, requêtes et réponses HTTP, codes de statut, rôle de TLS.",pr:"Observe une résolution DNS et des en-têtes HTTP.",code:"pkg install dnsutils\nnslookup wikipedia.org\ncurl -I https://wikipedia.org",va:"Que signifient 200, 301, 403, 404 et 500 ?",an:"Succès, redirection permanente, interdit, introuvable, erreur interne du serveur."},
+{t:"Premier scan avec Nmap",ch:"8",th:"Ce qu'est un scan, ce qu'il révèle, pourquoi il est encadré légalement.",pr:"Scanne uniquement la cible autorisée par le projet Nmap, ou ta propre box :",code:"pkg install nmap\nnmap -sT scanme.nmap.org\nnmap -sT -sV -p 22,80 scanme.nmap.org",warn:"scanme.nmap.org accepte des scans légers et occasionnels. Ne scanne jamais d'autres adresses publiques.",va:"Différence entre un port open, closed et filtered ?",an:"open : un service accepte. closed : la machine répond qu'aucun service n'écoute. filtered : pas de réponse claire, sans doute un pare-feu."},
+{t:"Sécurité Wi-Fi et réseau local",ch:"9",th:"WEP, WPA2, WPA3, réseaux publics, mot de passe d'administration du routeur.",pr:"Audite ton propre routeur : mot de passe admin changé ? WPS désactivé ? Chiffrement ? Firmware à jour ? Administration distante ?",va:"Liste 5 mesures pour sécuriser un réseau Wi-Fi.",an:"Changer l'admin par défaut, WPA3 ou WPA2-AES, mot de passe long, WPS désactivé, firmware à jour, pas d'admin depuis internet, réseau invité, isolation des clients."},
+{t:"Bilan de semaine 2",ch:"6 à 9",th:"Relis tes fiches réseau.",pr:"Termine le module réseau de TryHackMe. Bandit jusqu'au niveau 12.",va:"Explique ce qui se passe quand tu tapes une adresse web : DNS → TCP → TLS → HTTP.",an:"Le DNS donne l'IP, TCP ouvre la connexion (port 443), TLS chiffre et vérifie le certificat, HTTP demande la page."},
+{t:"La méthodologie d'un pentest",ch:"10",th:"Les phases : préparation, reconnaissance, scan et énumération, exploitation, post-exploitation, rapport.",pr:"Recopie les phases dans ton journal avec, pour chacune, la question à laquelle elle répond.",va:"Quelle phase est la plus importante pour le client ?",an:"Le rapport : c'est lui qui permet de corriger."},
+{t:"Reconnaissance passive (OSINT)",ch:"11",th:"WHOIS, DNS publics, certificats, opérateurs de recherche, ce qu'on apprend sans toucher la cible.",pr:"Fais l'audit d'exposition de toi-même : ton nom, ton pseudo, ton e-mail dans les fuites connues.",va:"Différence entre reconnaissance active et passive ?",an:"La passive n'envoie rien vers les systèmes de la cible : uniquement des sources publiques ou tierces."},
+{t:"Comment fonctionne une application web",ch:"12",th:"Client, serveur, base de données. GET et POST. Cookies et sessions.",pr:"Ajoute view-source: devant l'adresse d'un site dans Chrome. Repère les formulaires, champs cachés et scripts.",va:"Où est stocké un cookie de session et pourquoi est-il précieux ?",an:"Dans le navigateur. Qui le possède est considéré comme connecté, sans connaître le mot de passe."},
+{t:"L'OWASP Top 10",ch:"13",th:"Les 10 catégories de risques web les plus critiques.",pr:"Fais une fiche par catégorie : un exemple inventé et une protection.",va:"Cite 5 catégories de mémoire.",an:"Contrôle d'accès défaillant, défaillances cryptographiques, injection, conception non sécurisée, mauvaise configuration, composants vulnérables, authentification, intégrité, journalisation, SSRF."},
+{t:"Les injections (SQL)",ch:"14",th:"Pourquoi une injection existe. Les requêtes préparées comme solution.",pr:"PortSwigger Academy : leçon « SQL injection » et premier lab Apprentice.",va:"Pourquoi une requête préparée empêche-t-elle l'injection ?",an:"La structure et les données sont envoyées séparément : la saisie est toujours traitée comme une valeur, jamais comme du code."},
+{t:"XSS (Cross-Site Scripting)",ch:"14",th:"XSS réfléchi, stocké, DOM. Échappement des sorties, Content Security Policy.",pr:"PortSwigger Academy : leçon XSS et premier lab Apprentice.",va:"Différence entre XSS réfléchi et stocké ? Lequel est le plus grave ?",an:"Le réfléchi revient dans la réponse à une requête piégée ; le stocké est enregistré et touche tous les visiteurs. Le stocké est en général plus grave."},
+{t:"Authentification et contrôle d'accès",ch:"15",th:"Authentification contre autorisation, sessions, IDOR, MFA.",pr:"PortSwigger Academy : leçon « Access control » et un lab Apprentice.",va:"Donne un exemple d'IDOR avec une URL inventée.",an:"/api/commandes?id=5512 affiche la commande d'un autre client si on change l'identifiant."},
+{t:"Bilan de semaine 3",ch:"10 à 15",th:"Relis tes fiches OWASP.",pr:"Fais une salle TryHackMe débutant sur le web.",va:"Explique SQLi, XSS et IDOR à un ami, avec la protection de chacune.",an:"SQLi → requêtes préparées. XSS → échapper les sorties + CSP. IDOR → vérifier côté serveur que l'objet appartient à l'utilisateur."},
+{t:"Mots de passe et hachage",ch:"16",th:"Hachage contre chiffrement, sel, bcrypt et Argon2, attaques par dictionnaire.",pr:"Compare deux empreintes, puis installe un gestionnaire de mots de passe et active la double authentification.",code:'echo -n "bonjour" | sha256sum\necho -n "Bonjour" | sha256sum',va:"Pourquoi un seul caractère changé donne-t-il une empreinte totalement différente ?",an:"L'effet avalanche : les fonctions de hachage sont conçues pour ça."},
+{t:"Bases de la cryptographie",ch:"17",th:"Symétrique, asymétrique, clés publique et privée, signature. Encodage n'est pas chiffrement.",pr:"Encode puis décode en Base64, et génère une paire de clés SSH.",code:'echo "hacker" | base64\necho "aGFja2VyCg==" | base64 -d\nssh-keygen -t ed25519',va:"Pourquoi Base64 n'est-il pas une protection ?",an:"Il se décode sans aucune clé : c'est un format, pas un chiffrement."},
+{t:"Élévation de privilèges sous Linux",ch:"18",th:"Erreurs de configuration : sudo trop large, SUID, scripts root modifiables, secrets en clair.",pr:"Bandit jusqu'au niveau 15, ou une salle TryHackMe d'introduction aux privilèges Linux.",va:"Donne trois erreurs de configuration qui permettent de devenir root.",an:"Droits sudo trop larges, programmes SUID inadaptés, scripts exécutés par root mais modifiables par tous."},
+{t:"Penser en défenseur (Blue Team)",ch:"19",th:"Journaux, pare-feu, mises à jour, moindre privilège, défense en profondeur.",pr:"Pour chaque attaque vue ce mois-ci, écris comment on l'aurait détectée et empêchée.",va:"Qu'est-ce que la défense en profondeur ?",an:"Superposer des protections indépendantes pour qu'aucune défaillance unique ne suffise, comme les remparts successifs d'un château."},
+{t:"Ingénierie sociale et hameçonnage",ch:"20",th:"Phishing, smishing, prétexte, urgence artificielle.",pr:"Analyse 3 messages suspects reçus, sans cliquer. Liste les indices.",va:"Cite 5 signes qui doivent t'alerter.",an:"Expéditeur suspect, lien vers un autre domaine, urgence ou menace, demande de code ou de paiement, ton inhabituel."},
+{t:"Ton premier mini-CTF",ch:"21",th:"Les catégories de CTF et la méthode pour un défi.",pr:"Sur picoCTF, catégorie General Skills : résous au moins 3 défis.",va:"Après 30 minutes bloqué, que fais-tu ?",an:"Je lis un indice, pas la solution, et je note ce que je n'avais pas vu."},
+{t:"Rédiger un rapport",ch:"21",th:"Structure d'un rapport, niveaux de gravité, CVSS, recommandations.",pr:"Rédige 2 pages sur l'audit de ton propre réseau (jours 12 et 13).",va:"Ton rapport est-il compréhensible par quelqu'un de non technique ?",an:"Fais-le relire : la personne doit savoir quoi faire après l'avoir lu."},
+{t:"Bilan et plan pour la suite",ch:"22",th:"Certifications, parcours de 6 mois, portfolio, communautés.",pr:"Relis tout ton journal et refais les quatre bilans de semaine.",va:"Écris ton engagement pour 90 jours : plateforme, heures par semaine, objectif mesurable.",an:"Par exemple : 4 h par semaine, terminer Bandit et 30 labs PortSwigger d'ici fin janvier."}];
+
+const QUIZ=[
+{q:"Qu'est-ce qui distingue légalement un pentesteur d'un pirate ?",o:["Ses outils","Une autorisation écrite du propriétaire","Son niveau technique","Le fait de ne rien casser"],a:1,e:"Les techniques peuvent être identiques. L'autorisation écrite et le périmètre font toute la différence."},
+{q:"Une attaque qui rend un site inaccessible touche surtout…",o:["La confidentialité","L'intégrité","La disponibilité","L'authentification"],a:2,e:"La disponibilité : l'information n'est plus accessible quand on en a besoin."},
+{q:"Que signifie chmod 600 cle_privee ?",o:["Tout le monde lit","Seul le propriétaire lit et écrit","Seul le groupe lit","Le fichier devient exécutable"],a:1,e:"6 = lecture + écriture pour le propriétaire, 0 pour le groupe et les autres."},
+{q:"Quelle commande cherche un mot à l'intérieur des fichiers ?",o:["find","grep","ls","cd"],a:1,e:"grep cherche du texte dans les fichiers ; find cherche des fichiers."},
+{q:"Une adresse IP se situe à quelle couche OSI ?",o:["2 · Liaison","3 · Réseau","4 · Transport","7 · Application"],a:1,e:"Couche 3. Les adresses MAC sont en couche 2, les ports en couche 4."},
+{q:"Combien de machines utilisables dans un /24 ?",o:["24","256","254","255"],a:2,e:"2 puissance 8 = 256 adresses, moins l'adresse du réseau et celle de diffusion."},
+{q:"Le port 22 correspond en général à…",o:["HTTP","SSH","DNS","RDP"],a:1,e:"SSH, l'administration à distance chiffrée."},
+{q:"Dans la poignée de main TCP, que répond le serveur à un SYN sur un port ouvert ?",o:["ACK","RST","SYN-ACK","FIN"],a:2,e:"SYN, puis SYN-ACK, puis ACK. Un port fermé répond RST."},
+{q:"Un code HTTP 403 signifie…",o:["Page introuvable","Accès interdit","Erreur du serveur","Redirection"],a:1,e:"403 : le serveur a compris mais refuse l'accès."},
+{q:"Pour Nmap, un port « filtered » signifie le plus souvent…",o:["Un service écoute","Aucun service n'écoute","Un pare-feu empêche une réponse claire","Le port est chiffré"],a:2,e:"Pas de réponse exploitable : un équipement filtre probablement le trafic."},
+{q:"Quel protocole Wi-Fi est cassé et à proscrire ?",o:["WPA3","WPA2-AES","WEP","WPA2-Entreprise"],a:2,e:"Le WEP se contourne en quelques minutes."},
+{q:"La reconnaissance passive…",o:["Scanne les ports de la cible","N'envoie rien vers les systèmes de la cible","Est toujours illégale","Nécessite un accès"],a:1,e:"Elle s'appuie uniquement sur des sources publiques ou tierces."},
+{q:"Quelle est la meilleure protection contre l'injection SQL ?",o:["Filtrer les apostrophes","Cacher les messages d'erreur","Les requêtes préparées","Un mot de passe fort"],a:2,e:"Elles séparent la structure de la requête et les données."},
+{q:"Le XSS stocké est souvent plus grave que le réfléchi car…",o:["Il touche tous les visiteurs de la page","Il vole directement la base","Il ne laisse pas de trace","Il fonctionne sans navigateur"],a:0,e:"Le script est enregistré par le serveur et s'exécute chez chaque visiteur."},
+{q:"Changer id=1057 en id=1058 dans une URL et voir le profil d'un autre, c'est…",o:["Une injection SQL","Un XSS","Une IDOR","Du phishing"],a:2,e:"Une référence directe non sécurisée : le serveur ne vérifie pas que l'objet t'appartient."},
+{q:"Pour stocker des mots de passe, on utilise…",o:["MD5","Base64","Argon2 ou bcrypt","SHA-1"],a:2,e:"Des algorithmes lents, avec un sel, conçus pour les mots de passe."},
+{q:"Base64, c'est…",o:["Du chiffrement","Du hachage","De l'encodage","Une signature"],a:2,e:"Un format réversible par tout le monde, sans clé."},
+{q:"Dans le chiffrement asymétrique, ce qu'on peut donner à tout le monde est…",o:["La clé privée","La clé publique","Les deux","Aucune"],a:1,e:"La clé privée ne se partage jamais."},
+{q:"Un fichier SUID root s'exécute…",o:["Avec les droits de celui qui le lance","Avec les droits de son propriétaire (root)","Seulement par root","Jamais"],a:1,e:"C'est utile pour certains programmes système, et dangereux s'il est mal choisi."},
+{q:"Le message « Votre compte sera suspendu dans 24 h, cliquez ici » joue sur…",o:["La curiosité","L'urgence","La serviabilité","L'appât du gain"],a:1,e:"L'urgence artificielle empêche de réfléchir. Vérifie par un canal que tu connais déjà."},
+{q:"Si tu découvres une faille par hasard sur un vrai site, tu…",o:["Explores pour vérifier","T'arrêtes et passes par le canal de signalement officiel","Demandes une récompense","Publies la faille"],a:1,e:"Divulgation responsable : stop, notes factuelles, signalement officiel, aucune demande d'argent."},
+{q:"Quelle partie d'un rapport lit la direction en priorité ?",o:["Les annexes","La synthèse","Les résultats bruts","La liste des outils"],a:1,e:"Une page sans jargon : niveau de risque et priorités."}];
+
+const MEMO=[
+ {h:"Navigation et fichiers",r:[["pwd","Où suis-je"],["ls -la","Tout lister, en détail"],["cd dossier · cd .. · cd ~","Se déplacer"],["mkdir -p a/b","Créer des dossiers"],["cp src dest · mv src dest","Copier · déplacer"],["rm f · rm -r d","Supprimer (définitif)"],["cat f · less f","Afficher · lire"],["head -n 10 f · tail -n 10 f","Début · fin"],["nano f","Éditer"],["file f · strings f","Type · texte lisible"]]},
+ {h:"Chercher et filtrer",r:[["grep -i mot f","Chercher un mot"],["grep -r mot dossier","Chercher partout"],['find . -name "*.txt"',"Trouver des fichiers"],["wc -l · sort · uniq","Compter · trier · dédoublonner"],["cmd1 | cmd2","Enchaîner"],["cmd > f · cmd >> f","Écrire · ajouter"]]},
+ {h:"Permissions",r:[["whoami · id","Identité"],["chmod 755 f · chmod +x f","Permissions"],["chown user:groupe f","Propriétaire"],["sudo -l","Droits sudo"]]},
+ {h:"Réseau",r:[["ip addr","Adresses locales"],["curl ifconfig.me","IP publique"],["ping -c 4 hôte","Joignabilité"],["nslookup nom · dig nom","DNS"],["curl -I url · curl -v url","En-têtes · dialogue HTTP"],["ssh user@hôte -p port","Connexion distante"],["nmap -sT -sV cible","Ports et versions (cible autorisée)"],["nmap -sn 192.168.1.0/24","Appareils de ton réseau"]]},
+ {h:"Ports à connaître",r:[["21","FTP"],["22","SSH"],["23","Telnet (en clair)"],["25","SMTP"],["53","DNS"],["80 · 443","HTTP · HTTPS"],["110 · 143","POP3 · IMAP"],["139 · 445","SMB"],["3306 · 5432","MySQL · PostgreSQL"],["3389","RDP"],["8080","HTTP alternatif"],["8291","Winbox (MikroTik)"]]},
+ {h:"Hachage et encodage",r:[['echo -n "txt" | sha256sum',"Empreinte SHA-256"],['echo "txt" | base64',"Encoder"],["echo … | base64 -d","Décoder"],["ssh-keygen -t ed25519","Paire de clés SSH"]]},
+ {h:"Termux",r:[["pkg update && pkg upgrade","Mettre à jour"],["pkg install nom · pkg search nom","Installer · chercher"],["termux-setup-storage","Accès au stockage"]]}];
+
+/* ---------- État ---------- */
+let state={days:{},ctf:{}};      // {"3":{s:"open"|"filtered", conf:1-5, note:""}}
+let store=null, docRef=null, writing=false, pendingWrite=false;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ds=n=>state.days[n]||{};
+const status=n=>ds(n).s||"closed";
+
+function lsGet(){try{return JSON.parse(localStorage.getItem("labo30")||"null")}catch(e){return null}}
+function lsSet(){try{localStorage.setItem("labo30",JSON.stringify(state))}catch(e){}}
+
+async function save(){
+  lsSet();
+  if(!docRef){return}
+  if(writing){pendingWrite=true;return}
+  writing=true;
+  try{await docRef.set({days:state.days,ctf:state.ctf||{},updatedAt:Date.now()});setSync("Sauvegardé")}
+  catch(e){setSync("Sauvegarde locale seulement")}
+  writing=false;
+  if(pendingWrite){pendingWrite=false;save()}
+}
+function setSync(t){$("#sync").textContent=t}
+let toastT;function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,1800)}
+
+/* ---------- Parcours ---------- */
+function nextDay(){for(let i=1;i<=30;i++){if(status(i)!=="open")return i}return 30}
+function renderParcours(){
+  const nx=nextDay();
+  const g=$("#grid");g.innerHTML="";
+  let o=0,f=0;
+  for(let i=1;i<=30;i++){
+    const s=status(i);if(s==="open")o++;if(s==="filtered")f++;
+    const b=document.createElement("button");
+    b.className="cell "+(s==="closed"?"":s)+(i===nx?" today":"");
+    b.id="cell-"+i;b.setAttribute("aria-label","Jour "+i+" · "+({open:"terminé",filtered:"en cours",closed:"à faire"}[s]));
+    b.innerHTML="<span>"+i+"</span>";b.onclick=()=>openDay(i);g.appendChild(b);
+  }
+  $("#nOpen").textContent=o;$("#nFilt").textContent=f;
+  const d=D[nx];
+  $("#next").innerHTML=`<div class="eyebrow">${o===30?"Programme terminé":"Prochaine étape · jour "+nx}</div>
+    <h2>${o===30?"Bravo, les 30 jours sont faits. Écris ton plan pour les 90 prochains.":esc(d.t)}</h2>
+    <div class="row"><button class="btn" id="goNext">Ouvrir le jour ${nx}</button><span class="hint">Cours, chapitre ${esc(d.ch)}</span></div>`;
+  $("#goNext").onclick=()=>openDay(nx);
+  const ph=$("#phases");ph.innerHTML="";
+  PHASES.forEach(p=>{
+    let done=0;for(let i=p.days[0];i<=p.days[1];i++)if(status(i)==="open")done++;
+    const tot=p.days[1]-p.days[0]+1;
+    const sec=document.createElement("div");sec.className="phase";
+    sec.innerHTML=`<div class="phase-h"><h3><span style="color:var(${p.c})">Phase ${p.n}</span> · ${p.name}</h3><span>${done}/${tot}</span></div><div class="days"></div>`;
+    const list=sec.querySelector(".days");
+    for(let i=p.days[0];i<=p.days[1];i++){
+      const s=status(i),c=ds(i).conf;
+      const b=document.createElement("button");b.className="day";b.id="day-"+i;
+      b.innerHTML=`<span class="n">J${String(i).padStart(2,"0")}</span><span class="t">${esc(D[i].t)}</span><span class="pill ${s}">${s==="open"?"open"+(c?" · "+c+"/5":""):s==="filtered"?"filtered":"closed"}</span>`;
+      b.onclick=()=>openDay(i);list.appendChild(b);
+    }
+    ph.appendChild(sec);
+  });
+}
+
+/* ---------- Fiche du jour ---------- */
+let noteT,curDay=0;
+function openDay(n){
+  curDay=n;const d=D[n],st=ds(n);
+  const sh=$("#sheet");
+  sh.innerHTML=`<div class="sheet-in">
+    <div class="sheet-bar"><button class="btn ghost" id="close">← Parcours</button>
+      <div class="row"><button class="btn ghost" id="prev" ${n===1?"disabled":""} aria-label="Jour précédent">‹</button><button class="btn ghost" id="nextd" ${n===30?"disabled":""} aria-label="Jour suivant">›</button></div></div>
+    <div class="eyebrow">Jour ${n} · cours, chapitre ${esc(d.ch)}</div>
+    <h2 id="sheetTitle">${esc(d.t)}</h2>
+    <div class="blk"><h4>Théorie · 20–30 min</h4><p>${esc(d.th)}</p></div>
+    <div class="blk"><h4>Pratique · 30–45 min</h4><p>${esc(d.pr)}</p>${d.code?`<pre id="code">${esc(d.code)}</pre><button class="copy" id="copy">Copier les commandes</button>`:""}</div>
+    ${d.warn?`<div class="blk warn"><h4>Attention</h4><p>${esc(d.warn)}</p></div>`:""}
+    <div class="blk val"><h4>Validation · sans tes notes</h4><p>${esc(d.va)}</p>
+      <button class="copy" id="reveal" aria-expanded="false">Voir une réponse possible</button><p id="ans" class="hint" hidden>${esc(d.an)}</p></div>
+    <div class="blk"><h4>Statut</h4><div class="status-sel" role="group" aria-label="Statut du jour">
+      <button data-s="closed" id="st-closed">À faire</button><button data-s="filtered" id="st-filtered">En cours</button><button data-s="open" id="st-open">Terminé</button></div></div>
+    <div class="blk"><h4>Confiance</h4><p class="hint">1 = perdu · 5 = je pourrais l'expliquer à quelqu'un</p>
+      <div class="conf" role="group" aria-label="Confiance">${[1,2,3,4,5].map(k=>`<button data-c="${k}" id="conf-${k}">${k}</button>`).join("")}</div></div>
+    <div class="blk"><h4>Journal de bord</h4><p class="hint">3 choses apprises + 1 question restée ouverte</p>
+      <textarea id="note-${n}" placeholder="1. …&#10;2. …&#10;3. …&#10;Question : …">${esc(st.note||"")}</textarea></div>
+  </div>`;
+  sh.hidden=false;sh.scrollTop=0;document.body.style.overflow="hidden";
+  const sync=()=>{
+    const s=status(n);sh.querySelectorAll("[data-s]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.s===s));
+    sh.querySelectorAll("[data-c]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.c===ds(n).conf));
+  };sync();
+  const upd=p=>{state.days[n]={...ds(n),...p};save();sync();renderParcours()};
+  sh.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{upd({s:b.dataset.s});if(b.dataset.s==="open")toast("Jour "+n+" terminé")});
+  sh.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>upd({conf:+b.dataset.c}));
+  const ta=sh.querySelector("textarea");
+  ta.oninput=()=>{clearTimeout(noteT);noteT=setTimeout(()=>{state.days[n]={...ds(n),note:ta.value};if(status(n)==="closed"&&ta.value.trim())state.days[n].s="filtered";save();sync();renderParcours()},700)};
+  $("#close").onclick=closeDay;
+  $("#prev").onclick=()=>n>1&&openDay(n-1);
+  $("#nextd").onclick=()=>n<30&&openDay(n+1);
+  $("#reveal").onclick=e=>{const a=$("#ans");a.hidden=!a.hidden;e.target.setAttribute("aria-expanded",!a.hidden);e.target.textContent=a.hidden?"Voir une réponse possible":"Masquer la réponse"};
+  const cp=$("#copy");if(cp)cp.onclick=()=>{const t=d.code;
+    try{navigator.clipboard.writeText(t).then(()=>toast("Commandes copiées"),()=>selectCode())}catch(e){selectCode()}};
+  try{history.replaceState(null,"","#jour-"+n)}catch(e){}
+}
+function selectCode(){const r=document.createRange();r.selectNodeContents($("#code"));const s=getSelection();s.removeAllRanges();s.addRange(r);toast("Sélectionné : copie-le")}
+function closeDay(){const ta=$("#sheet textarea[id^='note-']");if(ta&&curDay){clearTimeout(noteT);if((ds(curDay).note||"")!==ta.value){state.days[curDay]={...ds(curDay),note:ta.value};save();renderParcours()}}
+  $("#sheet").hidden=true;document.body.style.overflow="";try{history.replaceState(null,"","#parcours")}catch(e){}}
+
+/* ---------- Quiz ---------- */
+let qi=0,qScore=0,qAnswered=false,qOrder=[];
+function startQuiz(){qOrder=QUIZ.map((_,i)=>i).sort(()=>Math.random()-.5).slice(0,10);qi=0;qScore=0;renderQuiz()}
+function renderQuiz(){
+  const v=$("#view-quiz");
+  if(qi>=qOrder.length){
+    v.innerHTML=`<div class="qcard"><div class="eyebrow">Résultat</div><h2>${qScore}/10</h2>
+      <p class="explain">${qScore>=8?"Solide. Tu peux passer à la suite.":qScore>=5?"Bonne base. Relis les chapitres des questions ratées.":"Pas d'inquiétude : reprends les bilans de semaine et réessaie demain."}</p>
+      <button class="btn" id="again">Nouvelle série</button></div>`;
+    $("#again").onclick=startQuiz;return}
+  const Q=QUIZ[qOrder[qi]];qAnswered=false;
+  v.innerHTML=`<div class="qcard"><div class="row" style="justify-content:space-between"><span class="eyebrow">Question ${qi+1}/10</span><span class="score">score ${qScore}</span></div>
+    <h2>${esc(Q.q)}</h2><div class="opts">${Q.o.map((o,i)=>`<button class="opt" data-i="${i}" id="opt-${i}">${esc(o)}</button>`).join("")}</div>
+    <p class="explain" id="exp" hidden></p><button class="btn" id="qnext" hidden>Question suivante</button></div>`;
+  v.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    if(qAnswered)return;qAnswered=true;const i=+b.dataset.i;
+    if(i===Q.a)qScore++;
+    v.querySelectorAll(".opt").forEach(x=>{const k=+x.dataset.i;if(k===Q.a)x.classList.add("good");else if(k===i)x.classList.add("bad")});
+    const e=$("#exp");e.textContent=(i===Q.a?"Exact. ":"Pas tout à fait. ")+Q.e;e.hidden=false;$("#qnext").hidden=false;});
+  $("#qnext").onclick=()=>{qi++;renderQuiz()};
+}
+
+/* ---------- Mémo ---------- */
+function renderMemo(){
+  const v=$("#view-memo");
+  v.innerHTML=`<div style="display:flex;flex-direction:column;gap:16px"><input class="search" id="memo-q" type="search" placeholder="Chercher une commande ou un port…" aria-label="Chercher"><div id="memo-list" style="display:flex;flex-direction:column;gap:16px"></div></div>`;
+  const draw=q=>{q=q.toLowerCase();$("#memo-list").innerHTML=MEMO.map(s=>{
+    const rows=s.r.filter(r=>!q||(r[0]+" "+r[1]).toLowerCase().includes(q));
+    return rows.length?`<div class="memo-sec"><h3>${s.h}</h3><div class="tbl">${rows.map(r=>`<div class="tr"><code>${esc(r[0])}</code><span>${esc(r[1])}</span></div>`).join("")}</div></div>`:""}).join("")||`<p class="hint">Rien trouvé pour « ${esc(q)} ».</p>`};
+  draw("");$("#memo-q").oninput=e=>draw(e.target.value);
+}
+
+/* ---------- Navigation ---------- */
+function show(v){
+  ["parcours","labo","quiz","memo"].forEach(k=>{$("#view-"+k).hidden=k!==v;$("#tab-"+k).setAttribute("aria-current",k===v?"page":"false")});
+  if(v==="quiz"&&!qOrder.length)startQuiz();
+  if(v==="memo"&&!$("#memo-q"))renderMemo();
+  if(v==="labo")renderLabo();
+  window.scrollTo(0,0);
+}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{closeDay();show(b.dataset.v);try{history.replaceState(null,"","#"+b.dataset.v)}catch(e){}});
+function route(){const h=location.hash.slice(1);const m=h.match(/^jour-(\d+)$/);
+  if(m&&+m[1]>=1&&+m[1]<=30){show("parcours");openDay(+m[1]);return}
+  show(["labo","quiz","memo"].includes(h)?h:"parcours")}
+window.addEventListener("hashchange",route);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#sheet").hidden)closeDay()});
+
+/* ---------- Démarrage ---------- */
+const local=lsGet();if(local&&local.days)state={days:local.days,ctf:local.ctf||{}};
+renderParcours();
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',route);else setTimeout(route,0);
+
+setSync(local?"Progression enregistrée sur cet appareil":"Ta progression sera enregistrée sur cet appareil");
+</script>
+<script>
+/* ================= LABO : machines simulées et défis CTF ================= */
+const MACHINES=[
+{id:"m1",name:"Boulangerie",ip:"10.10.0.11",diff:"Facile",os:"Linux",
+ brief:"Le site de commande en ligne d'une boulangerie de quartier. Le gérant t'a mandaté par écrit pour tester son serveur. Trouve un accès utilisateur, puis deviens root.",
+ tags:["Reconnaissance","Code source","Secrets en clair"],
+ chips:["nmap -sV 10.10.0.11","curl http://10.10.0.11/","ssh test@10.10.0.11","ls -la","cat ","cat .bash_history","su root","help"],
+ hints:["Lance un scan : quels services tournent ?","Un site web peut cacher des choses dans son code source. Lis bien les commentaires HTML.","Une fois connecté, regarde l'historique des commandes de l'utilisateur.","Un script de sauvegarde lisible par tous contient parfois un mot de passe… et les gens réutilisent leurs mots de passe."],
+ flags:{user:"flag{bienvenue_a_la_boulangerie}",root:"flag{un_mot_de_passe_reutilise}"},
+ lesson:"Trois erreurs en chaîne : des identifiants de test laissés dans un commentaire HTML, un mot de passe en clair dans un script lisible par tous, et la réutilisation du mot de passe de la base de données pour le compte root. Correction : nettoyer le code avant la mise en production, stocker les secrets dans un coffre avec des droits 600, un mot de passe unique par compte.",
+ ports:[["22/tcp","open","ssh","OpenSSH 8.9p1 Ubuntu"],["80/tcp","open","http","nginx 1.18.0"]],
+ web:{"/":`<!doctype html>
+<html><head><title>Boulangerie du Marché</title></head>
+<body>
+  <h1>Boulangerie du Marché</h1>
+  <p>Commandez votre pain en ligne, retrait dès 6 h.</p>
+  <a href="/commande">Commander</a>
+  <!-- TODO avant la mise en ligne : supprimer le compte de test
+       identifiant : test   mot de passe : Pain2024! -->
+</body></html>`,"/robots.txt":"User-agent: *\nDisallow: /admin","/admin":"403 Forbidden","/commande":"<p>Service de commande en maintenance.</p>"},
+ users:{test:"Pain2024!",root:"Croissant#88"},
+ fs:{
+  "/":{d:1},"/home":{d:1},"/home/test":{d:1,o:"test"},"/root":{d:1,o:"root",r:["root"]},"/opt":{d:1},"/etc":{d:1},"/var":{d:1},"/var/backups":{d:1},
+  "/home/test/user.txt":{c:"flag{bienvenue_a_la_boulangerie}\n",o:"test",m:"-rw-r-----",r:["test","root"]},
+  "/home/test/.bash_history":{c:"ls\ncd /opt\nls\nsudo ./sauvegarde.sh\nexit\n",o:"test",m:"-rw-------",r:["test","root"]},
+  "/home/test/.bashrc":{c:"# ~/.bashrc\nalias ll='ls -la'\n",o:"test",m:"-rw-r--r--"},
+  "/opt/sauvegarde.sh":{c:"#!/bin/bash\n# Sauvegarde nocturne de la base des commandes\nmysqldump -u root -pCroissant#88 boutique > /var/backups/boutique.sql\n",o:"root",m:"-rwxr-xr-x"},
+  "/etc/passwd":{c:"root:x:0:0:root:/root:/bin/bash\ntest:x:1001:1001::/home/test:/bin/bash\nwww-data:x:33:33::/var/www:/usr/sbin/nologin\n",o:"root",m:"-rw-r--r--"},
+  "/etc/shadow":{c:"",o:"root",m:"-rw-r-----",r:["root"]},
+  "/var/backups/boutique.sql":{c:"-- dump vide\n",o:"root",m:"-rw-------",r:["root"]},
+  "/root/root.txt":{c:"flag{un_mot_de_passe_reutilise}\n",o:"root",m:"-rw-------",r:["root"]}}},
+
+{id:"m2",name:"Archives",ip:"10.10.0.12",diff:"Facile+",os:"Linux",
+ brief:"Le serveur d'archives d'une mairie (exercice fictif, mission autorisée). On soupçonne un partage de fichiers trop ouvert. Obtiens un accès, puis les droits root.",
+ tags:["FTP anonyme","Hachage","SUID"],
+ chips:["nmap -sV 10.10.0.12","ftp 10.10.0.12","get ","ls","cat ","hashcheck empreinte.txt wordlist.txt","ssh archiviste@10.10.0.12","find / -perm -4000 -type f 2>/dev/null","help"],
+ hints:["Le scan révèle un service de partage de fichiers. Certains acceptent l'utilisateur « anonymous ».","Récupère les fichiers avec get, puis lis-les sur ta machine.","Un mot de passe haché avec SHA-256 sans sel se devine avec une liste de mots : hashcheck <fichier> wordlist.txt.","Une fois connecté, cherche les programmes SUID. L'un d'eux n'est pas un programme système standard…"],
+ flags:{user:"flag{un_hash_rapide_se_devine}",root:"flag{un_suid_mal_choisi}"},
+ lesson:"Le FTP anonyme exposait des fichiers internes, le mot de passe était haché avec un algorithme rapide et sans sel (donc retrouvé par dictionnaire), et un programme maison SUID root permettait de lire n'importe quel fichier. Correction : désactiver l'accès anonyme, utiliser Argon2 ou bcrypt avec un mot de passe long, retirer le bit SUID (chmod u-s) des programmes qui n'en ont pas besoin.",
+ ports:[["21/tcp","open","ftp","vsftpd 3.0.5"],["22/tcp","open","ssh","OpenSSH 8.9p1 Ubuntu"]],
+ ftp:{"lisez-moi.txt":"Serveur des archives municipales.\nCompte de maintenance : archiviste\nLe mot de passe est dans empreinte.txt.\nOn l'a haché en SHA-256, donc c'est sécurisé (non ?).\n","empreinte.txt":"3516cd8a8124a6025699fa4b318b646a1940bbbd3b10c44fc7c20fbc596d4eaf\n"},
+ users:{archiviste:"tournesol"},
+ fs:{
+  "/":{d:1},"/home":{d:1},"/home/archiviste":{d:1,o:"archiviste"},"/root":{d:1,o:"root",r:["root"]},"/usr":{d:1},"/usr/bin":{d:1},"/usr/local":{d:1},"/usr/local/bin":{d:1},"/etc":{d:1},
+  "/home/archiviste/user.txt":{c:"flag{un_hash_rapide_se_devine}\n",o:"archiviste",m:"-rw-r-----",r:["archiviste","root"]},
+  "/home/archiviste/memo.txt":{c:"Penser à demander au prestataire pourquoi « lecteur » a besoin des droits root.\n",o:"archiviste",m:"-rw-r--r--"},
+  "/usr/bin/passwd":{c:"\x7fELF",o:"root",m:"-rwsr-xr-x",bin:1},"/usr/bin/sudo":{c:"\x7fELF",o:"root",m:"-rwsr-xr-x",bin:1},
+  "/usr/local/bin/lecteur":{c:"\x7fELF",o:"root",m:"-rwsr-xr-x",bin:1,suid:"lecteur"},
+  "/etc/passwd":{c:"root:x:0:0:root:/root:/bin/bash\narchiviste:x:1001:1001::/home/archiviste:/bin/bash\nftp:x:117:122:ftp daemon:/srv/ftp:/usr/sbin/nologin\n",o:"root",m:"-rw-r--r--"},
+  "/root/root.txt":{c:"flag{un_suid_mal_choisi}\n",o:"root",m:"-rw-------",r:["root"]}}},
+
+{id:"m3",name:"Portail",ip:"10.10.0.13",diff:"Moyen",os:"Web",
+ brief:"Un portail de factures en ligne (fictif). Le client a autorisé un test de l'application web uniquement. Trouve la facture d'un autre client, puis accède au compte administrateur.",
+ tags:["Web","IDOR","Injection SQL"],
+ chips:["nmap -sV 10.10.0.13","curl http://10.10.0.13/","curl http://10.10.0.13/robots.txt",'curl -d "user=demo&pass=demo" http://10.10.0.13/login','curl "http://10.10.0.13/facture?id=1042"',"help"],
+ hints:["Lis la page d'accueil : elle donne un compte de démonstration.","Connecte-toi avec le compte démo et regarde l'adresse de ta facture. Que se passe-t-il si tu changes le numéro ?","Le formulaire de connexion est-il sensible aux caractères spéciaux ? Essaie une apostrophe dans le champ user et lis le message d'erreur.","La requête SQL est affichée dans l'erreur. Comment faire pour que la condition sur le mot de passe ne compte plus ? (Pense aux commentaires SQL : --)"],
+ flags:{user:"flag{idor_verifie_cote_serveur}",root:"flag{toujours_des_requetes_preparees}"},
+ lesson:"Deux failles du Top 10 OWASP : une IDOR (le serveur affichait n'importe quelle facture sans vérifier qu'elle appartenait à l'utilisateur connecté) et une injection SQL (la saisie était collée dans la requête). Correction : vérifier les droits côté serveur à chaque requête, utiliser des requêtes préparées, et ne jamais afficher les erreurs SQL à l'utilisateur.",
+ ports:[["80/tcp","open","http","Apache httpd 2.4.52"],["3306/tcp","filtered","mysql",""]],
+ fs:{"/":{d:1}}}];
+
+const CTF=[
+ {id:"c1",cat:"Crypto",pts:10,t:"Pas si secret",q:"Un développeur pense avoir « chiffré » ce message :",data:"ZmxhZ3tiYXNlNjRfbmVzdF9wYXNfZHVfY2hpZmZyZW1lbnR9",tip:"Les = finaux, les lettres et chiffres… Dans le terminal de ta machine : echo ... | base64 -d",f:"flag{base64_nest_pas_du_chiffrement}"},
+ {id:"c2",cat:"Crypto",pts:15,t:"Ave César",q:"Chaque lettre a été décalée de 13 rangs dans l'alphabet (ROT13).",data:"synt{whyrf_prfne_frenvg_qrph}",tip:"« synt » devient « flag ». Décale chaque lettre de 13. Le terminal connaît la commande rot13.",f:"flag{jules_cesar_serait_decu}"},
+ {id:"c3",cat:"Crypto",pts:15,t:"Hexa-gone",q:"Ces octets sont écrits en hexadécimal :",data:"666c61677b6c686578615f636573745f6a757374655f756e5f666f726d61747d",tip:"Deux caractères hexadécimaux = un octet = une lettre. 66 = f, 6c = l… Le terminal connaît xxd -r -p.",f:"flag{lhexa_cest_juste_un_format}"},
+ {id:"c4",cat:"Crypto",pts:30,t:"Mille-feuille",q:"Le message a subi deux transformations successives. Retire les couches dans le bon ordre.",data:"c3ludHtyemN2eXJlX2FyX2NlYmdydHJfZXZyYX0=",tip:"Décode d'abord le Base64. Le résultat te dira quelle est la deuxième couche.",f:"flag{empiler_ne_protege_rien}"},
+ {id:"c5",cat:"Forensics",pts:20,t:"Le journal ne ment pas",q:"Extrait du journal d'authentification d'un serveur. Quel compte a été compromis, et depuis quelle adresse ? Réponds sous la forme flag{compte_adresse}.",data:"Oct 29 02:14:01 srv sshd[812]: Failed password for root from 198.51.100.7\nOct 29 02:14:03 srv sshd[812]: Failed password for root from 198.51.100.7\nOct 29 02:15:40 srv sshd[901]: Failed password for invalid user oracle from 203.0.113.45\nOct 29 02:15:42 srv sshd[901]: Failed password for admin from 203.0.113.45\nOct 29 02:15:44 srv sshd[901]: Failed password for admin from 203.0.113.45\nOct 29 02:15:47 srv sshd[901]: Failed password for admin from 203.0.113.45\nOct 29 02:15:51 srv sshd[901]: Accepted password for admin from 203.0.113.45\nOct 29 02:16:02 srv sudo: admin : COMMAND=/bin/cat /etc/shadow",tip:"Cherche la ligne « Accepted ». Les échecs d'avant montrent une attaque par essais successifs.",f:"flag{admin_203.0.113.45}"},
+ {id:"c6",cat:"Forensics",pts:20,t:"Fichier oublié",q:"Journal d'un serveur web pendant un scan de répertoires. Quel fichier le scanner a-t-il réellement trouvé ? Réponds flag{nom_du_fichier}.",data:'203.0.113.9 "GET /admin HTTP/1.1" 404\n203.0.113.9 "GET /backup HTTP/1.1" 404\n203.0.113.9 "GET /backup.zip HTTP/1.1" 404\n203.0.113.9 "GET /backup-2024.zip HTTP/1.1" 200\n203.0.113.9 "GET /config.php.bak HTTP/1.1" 404\n203.0.113.9 "GET /.git/HEAD HTTP/1.1" 404',tip:"Le code de statut à la fin de chaque ligne dit si la ressource existe. 200 = trouvé.",f:"flag{backup-2024.zip}"},
+ {id:"c7",cat:"Web",pts:15,t:"Derrière la vitrine",q:"Voici une page web telle que le navigateur l'affiche. Le drapeau n'est pas visible à l'écran.",web:`<!doctype html>
+<html><head><title>Agence Horizon</title></head>
+<body>
+  <h1>Agence Horizon</h1>
+  <p>Vos voyages, notre passion.</p>
+  <!-- note dev : flag{lis_toujours_le_code_source} -->
+  <a href="/contact">Nous contacter</a>
+</body></html>`,tip:"Affiche le code source de la page.",f:"flag{lis_toujours_le_code_source}"},
+ {id:"c8",cat:"Web",pts:20,t:"Cookie de confiance",q:"Après connexion, le site dépose ce cookie dans ton navigateur : role=dXRpbGlzYXRldXI= — Quelle valeur faudrait-il mettre pour être considéré comme administrateur (le mot « admin ») ? Réponds flag{valeur}.",data:"Set-Cookie: role=dXRpbGlzYXRldXI=; Path=/",tip:"Décode la valeur : c'est du Base64. Encode « admin » de la même façon (echo -n admin | base64). Leçon : ne jamais faire confiance à ce que le client peut modifier.",f:"flag{YWRtaW4=}"},
+ {id:"c9",cat:"Hash",pts:20,t:"Empreinte célèbre",q:"Empreinte MD5 trouvée dans une base volée. Quel était le mot de passe ? Réponds flag{motdepasse}.",data:"5f4dcc3b5aa765d61d8327deb882cf99",tip:"MD5 sans sel : les empreintes des mots de passe courants sont connues de tous. Ta wordlist.txt contient peut-être la réponse (hashcheck sait aussi faire du MD5).",f:"flag{password}"},
+ {id:"c10",cat:"Réseau",pts:10,t:"Porte d'entrée",q:"Un scan montre le port 3389/tcp ouvert sur un serveur Windows exposé sur internet. Quel est le protocole ? Réponds flag{sigle}, en minuscules.",tip:"C'est le bureau à distance de Windows (chapitre 7).",f:"flag{rdp}"},
+ {id:"c11",cat:"OSINT",pts:20,t:"Format d'adresse",q:"Sur le site (fictif) de l'entreprise Exemple SARL, l'équipe est présentée : « Moussa Traoré, comptable — moussa.traore@exemple.bf » et « Amina Diallo, directrice ». Quelle est probablement l'adresse de la directrice ? Réponds flag{adresse}.",tip:"Déduis le format prénom.nom@domaine. C'est ainsi que les attaquants préparent un hameçonnage ciblé.",f:"flag{amina.diallo@exemple.bf}"},
+ {id:"c12",cat:"Général",pts:10,t:"Fichiers fantômes",q:"Quelle option de ls affiche aussi les fichiers cachés (ceux qui commencent par un point) ? Réponds flag{option} sans le tiret.",tip:"Chapitre 4.",f:"flag{a}"}];
+
+const WORDLIST="soleil\nbaobab\nmangue\npassword\n123456\nazerty\nmotdepasse\nouaga\nbonjour\nkarite\nhibiscus\nliberte\nfootball\ntournesol\nqwerty\ndragon\nprincesse\nnoel2025\nadmin\nletmein\n";
+
+/* ---------- Points ---------- */
+function solved(k){return !!(state.ctf&&state.ctf[k])}
+function points(){let p=0;MACHINES.forEach(m=>{if(solved(m.id+"u"))p+=20;if(solved(m.id+"r"))p+=30});CTF.forEach(c=>{if(solved(c.id))p+=c.pts});return p}
+const MAXPTS=MACHINES.length*50+CTF.reduce((a,c)=>a+c.pts,0);
+function rank(p){return p>=300?"Hacker éthique":p>=180?"Explorateur":p>=80?"Apprenti":"Débutant"}
+function markSolved(k,label){state.ctf=state.ctf||{};if(state.ctf[k])return false;state.ctf[k]=Date.now();save();toast(label);return true}
+const norm=s=>s.trim().toLowerCase().replace(/^flag\{|\}$/g,"");
+const sameFlag=(a,b)=>norm(a)===norm(b)&&a.trim()!=="";
+
+/* ---------- Vue Labo ---------- */
+function renderLabo(){
+  const v=$("#view-labo"),p=points();
+  v.innerHTML=`<div style="display:flex;flex-direction:column;gap:18px">
+   <div class="scan"><div class="cmd">$ cat score.txt</div>
+     <div class="big"><b>${p}</b>/${MAXPTS} points · rang : ${rank(p)}</div>
+     <div class="bar"><i style="width:${Math.round(p/MAXPTS*100)}%"></i></div></div>
+   <p class="note-legal">Tout ce labo est <b>simulé dans ton navigateur</b> : aucune vraie machine n'est attaquée. Les adresses 10.10.0.x n'existent que dans cette page.</p>
+   <div class="phase"><div class="phase-h"><h3>Machines</h3><span>${MACHINES.filter(m=>solved(m.id+"r")).length}/${MACHINES.length} rootées</span></div>
+     <div class="mgrid">${MACHINES.map(m=>`<button class="mcard" id="mach-${m.id}">
+       <div class="row" style="justify-content:space-between"><span class="eyebrow">${m.os} · ${m.ip}</span><span class="pill diff">${m.diff}</span></div>
+       <h4>${m.name}</h4><p class="hint">${m.tags.join(" · ")}</p>
+       <div class="row"><span class="pill ${solved(m.id+"u")?"open":""}">user ${solved(m.id+"u")?"✓":"20 pts"}</span><span class="pill ${solved(m.id+"r")?"open":""}">root ${solved(m.id+"r")?"✓":"30 pts"}</span></div></button>`).join("")}</div></div>
+   <div class="phase"><div class="phase-h"><h3>Défis CTF</h3><span>${CTF.filter(c=>solved(c.id)).length}/${CTF.length} résolus</span></div>
+     <div class="days">${CTF.map(c=>`<button class="day ctfrow" id="ctf-${c.id}"><span class="n">${c.cat}</span><span class="t">${esc(c.t)}</span><span class="pill ${solved(c.id)?"open":""}">${solved(c.id)?"✓ "+c.pts:c.pts+" pts"}</span></button>`).join("")}</div></div>
+   <p class="note-legal">Prêt pour de vraies machines ? Elles t'attendent, en toute légalité, sur TryHackMe, Hack The Box, Root Me et picoCTF.</p></div>`;
+  MACHINES.forEach(m=>$("#mach-"+m.id).onclick=()=>openMachine(m));
+  CTF.forEach(c=>$("#ctf-"+c.id).onclick=()=>openCtf(c));
+}
+
+/* ---------- Fiche défi ---------- */
+function openCtf(c){
+  const sh=$("#sheet");
+  sh.innerHTML=`<div class="sheet-in">
+   <div class="sheet-bar"><button class="btn ghost" id="close">← Labo</button><span class="pill ${solved(c.id)?"open":""}">${solved(c.id)?"résolu":c.pts+" pts"}</span></div>
+   <div class="eyebrow">Défi · ${c.cat}</div><h2 id="sheetTitle">${esc(c.t)}</h2>
+   <div class="blk"><h4>Énoncé</h4><p>${esc(c.q)}</p>${c.data?`<pre>${esc(c.data)}</pre>`:""}
+    ${c.web?`<div class="fakebrowser"><div class="fb-bar">http://horizon.exemple/</div><div class="fb-page"><h3>Agence Horizon</h3><p>Vos voyages, notre passion.</p><u>Nous contacter</u></div></div>
+      <button class="copy" id="src" aria-expanded="false">Afficher le code source</button><pre id="srccode" hidden>${esc(c.web)}</pre>`:""}</div>
+   <div class="blk"><h4>Indice</h4><button class="copy" id="tipb" aria-expanded="false">Révéler l'indice</button><p class="hint" id="tip" hidden>${esc(c.tip)}</p></div>
+   <div class="blk"><h4>Ton drapeau</h4><form class="flagform" id="cf"><input id="flag-${c.id}" class="search" placeholder="flag{…}" autocapitalize="off" autocomplete="off" spellcheck="false"><button class="btn">Valider</button></form><p class="hint" id="fres" role="status"></p></div>
+   <p class="hint">Astuce : le terminal de n'importe quelle machine (onglet Labo → une machine) sait faire base64 -d, rot13, xxd -r -p et hashcheck.</p></div>`;
+  openSheetCommon();
+  $("#close").onclick=()=>{closeSheet();renderLabo()};
+  if(c.web)$("#src").onclick=e=>{const s=$("#srccode");s.hidden=!s.hidden;e.target.setAttribute("aria-expanded",!s.hidden);e.target.textContent=s.hidden?"Afficher le code source":"Masquer le code source"};
+  $("#tipb").onclick=e=>{const t=$("#tip");t.hidden=!t.hidden;e.target.setAttribute("aria-expanded",!t.hidden)};
+  $("#cf").onsubmit=e=>{e.preventDefault();const val=$("#flag-"+c.id).value;
+    if(sameFlag(val,c.f)){markSolved(c.id,"+"+c.pts+" points");$("#fres").textContent="Drapeau correct. Bien joué !";$("#fres").style.color="var(--open)"}
+    else{$("#fres").textContent="Ce n'est pas le bon drapeau. Vérifie l'orthographe exacte.";$("#fres").style.color="var(--warn)"}};
+}
+
+/* ---------- Machines : moteur de terminal ---------- */
+const sessions={};
+function newSession(m){return{m,host:"labo",user:"toi",cwd:"/home/toi",stack:[],hist:[],hi:0,mode:null,
+  lfs:{"/home/toi/notes.txt":"Machine cible : "+m.ip+"\nMéthode : 1) scanner  2) énumérer  3) accéder  4) élever ses privilèges\nTape help pour la liste des commandes.\n","/home/toi/wordlist.txt":WORDLIST},
+  out:[{t:"Labo simulé · cible autorisée : "+m.ip+" ("+m.name+")\nTape help pour voir les commandes. Les puces sous le terminal t'aident à taper sur téléphone.\n",c:"sys"}]}}
+function prompt(s){if(s.mode==="ftp")return"ftp> ";const home=s.host==="labo"?"/home/toi":(s.user==="root"?"/root":"/home/"+s.user);
+  const p=s.cwd===home?"~":s.cwd.startsWith(home+"/")?"~"+s.cwd.slice(home.length):s.cwd;
+  return s.user+"@"+(s.host==="labo"?"labo":s.m.name.toLowerCase())+":"+p+(s.user==="root"?"# ":"$ ")}
+function resolve(s,p){if(!p||p==="~")p=s.host==="labo"?"/home/toi":(s.user==="root"?"/root":"/home/"+s.user);
+  if(p.startsWith("~/"))p=(s.host==="labo"?"/home/toi":"/home/"+s.user)+p.slice(1);
+  const parts=(p.startsWith("/")?p:s.cwd+"/"+p).split("/"),out=[];
+  for(const x of parts){if(!x||x===".")continue;if(x==="..")out.pop();else out.push(x)}return"/"+out.join("/")}
+function canRead(s,node){return!node.r||node.r.includes(s.user)||s.user==="root"}
+function rfs(s){return s.m.fs}
+function children(map,dir,isDirFn){const pre=dir==="/"?"/":dir+"/";const set=new Set();
+  Object.keys(map).forEach(k=>{if(k!==dir&&k.startsWith(pre)){set.add(k.slice(pre.length).split("/")[0])}});return[...set].sort()}
+
+function tokenize(line){const t=[];let cur="",q=null,has=false;
+  for(const ch of line){if(q){if(ch===q)q=null;else cur+=ch}else if(ch==='"'||ch==="'"){q=ch;has=true}else if(/\s/.test(ch)){if(cur||has){t.push(cur);cur="";has=false}}else cur+=ch}
+  if(cur||has)t.push(cur);return t}
+function splitPipes(line){const parts=[];let cur="",q=null;for(const ch of line){if(q){cur+=ch;if(ch===q)q=null}else if(ch==='"'||ch==="'"){q=ch;cur+=ch}else if(ch==="|"){parts.push(cur);cur=""}else cur+=ch}parts.push(cur);return parts}
+
+async function sha(algo,txt){if(algo==="md5")return md5(txt);
+  const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(txt));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+/* MD5 compact (domaine public) */
+function md5(str){function c(a,b){return(a+b)&0xffffffff}function cm(q,a,b,x,s,t){a=c(c(a,q),c(x,t));return c((a<<s)|(a>>>(32-s)),b)}
+ function ff(a,b,c_,d,x,s,t){return cm((b&c_)|(~b&d),a,b,x,s,t)}function gg(a,b,c_,d,x,s,t){return cm((b&d)|(c_&~d),a,b,x,s,t)}
+ function hh(a,b,c_,d,x,s,t){return cm(b^c_^d,a,b,x,s,t)}function ii(a,b,c_,d,x,s,t){return cm(c_^(b|~d),a,b,x,s,t)}
+ const u=unescape(encodeURIComponent(str)),n=((u.length+8)>>6)+1,x=new Array(n*16).fill(0);
+ for(let i=0;i<u.length;i++)x[i>>2]|=u.charCodeAt(i)<<((i%4)*8);x[u.length>>2]|=0x80<<((u.length%4)*8);x[n*16-2]=u.length*8;
+ let a=1732584193,b=-271733879,cc=-1732584194,d=271733878;
+ for(let i=0;i<x.length;i+=16){const oa=a,ob=b,oc=cc,od=d;
+  a=ff(a,b,cc,d,x[i],7,-680876936);d=ff(d,a,b,cc,x[i+1],12,-389564586);cc=ff(cc,d,a,b,x[i+2],17,606105819);b=ff(b,cc,d,a,x[i+3],22,-1044525330);
+  a=ff(a,b,cc,d,x[i+4],7,-176418897);d=ff(d,a,b,cc,x[i+5],12,1200080426);cc=ff(cc,d,a,b,x[i+6],17,-1473231341);b=ff(b,cc,d,a,x[i+7],22,-45705983);
+  a=ff(a,b,cc,d,x[i+8],7,1770035416);d=ff(d,a,b,cc,x[i+9],12,-1958414417);cc=ff(cc,d,a,b,x[i+10],17,-42063);b=ff(b,cc,d,a,x[i+11],22,-1990404162);
+  a=ff(a,b,cc,d,x[i+12],7,1804603682);d=ff(d,a,b,cc,x[i+13],12,-40341101);cc=ff(cc,d,a,b,x[i+14],17,-1502002290);b=ff(b,cc,d,a,x[i+15],22,1236535329);
+  a=gg(a,b,cc,d,x[i+1],5,-165796510);d=gg(d,a,b,cc,x[i+6],9,-1069501632);cc=gg(cc,d,a,b,x[i+11],14,643717713);b=gg(b,cc,d,a,x[i],20,-373897302);
+  a=gg(a,b,cc,d,x[i+5],5,-701558691);d=gg(d,a,b,cc,x[i+10],9,38016083);cc=gg(cc,d,a,b,x[i+15],14,-660478335);b=gg(b,cc,d,a,x[i+4],20,-405537848);
+  a=gg(a,b,cc,d,x[i+9],5,568446438);d=gg(d,a,b,cc,x[i+14],9,-1019803690);cc=gg(cc,d,a,b,x[i+3],14,-187363961);b=gg(b,cc,d,a,x[i+8],20,1163531501);
+  a=gg(a,b,cc,d,x[i+13],5,-1444681467);d=gg(d,a,b,cc,x[i+2],9,-51403784);cc=gg(cc,d,a,b,x[i+7],14,1735328473);b=gg(b,cc,d,a,x[i+12],20,-1926607734);
+  a=hh(a,b,cc,d,x[i+5],4,-378558);d=hh(d,a,b,cc,x[i+8],11,-2022574463);cc=hh(cc,d,a,b,x[i+11],16,1839030562);b=hh(b,cc,d,a,x[i+14],23,-35309556);
+  a=hh(a,b,cc,d,x[i+1],4,-1530992060);d=hh(d,a,b,cc,x[i+4],11,1272893353);cc=hh(cc,d,a,b,x[i+7],16,-155497632);b=hh(b,cc,d,a,x[i+10],23,-1094730640);
+  a=hh(a,b,cc,d,x[i+13],4,681279174);d=hh(d,a,b,cc,x[i],11,-358537222);cc=hh(cc,d,a,b,x[i+3],16,-722521979);b=hh(b,cc,d,a,x[i+6],23,76029189);
+  a=hh(a,b,cc,d,x[i+9],4,-640364487);d=hh(d,a,b,cc,x[i+12],11,-421815835);cc=hh(cc,d,a,b,x[i+15],16,530742520);b=hh(b,cc,d,a,x[i+2],23,-995338651);
+  a=ii(a,b,cc,d,x[i],6,-198630844);d=ii(d,a,b,cc,x[i+7],10,1126891415);cc=ii(cc,d,a,b,x[i+14],15,-1416354905);b=ii(b,cc,d,a,x[i+5],21,-57434055);
+  a=ii(a,b,cc,d,x[i+12],6,1700485571);d=ii(d,a,b,cc,x[i+3],10,-1894986606);cc=ii(cc,d,a,b,x[i+10],15,-1051523);b=ii(b,cc,d,a,x[i+1],21,-2054922799);
+  a=ii(a,b,cc,d,x[i+8],6,1873313359);d=ii(d,a,b,cc,x[i+15],10,-30611744);cc=ii(cc,d,a,b,x[i+6],15,-1560198380);b=ii(b,cc,d,a,x[i+13],21,1309151649);
+  a=ii(a,b,cc,d,x[i+4],6,-145523070);d=ii(d,a,b,cc,x[i+11],10,-1120210379);cc=ii(cc,d,a,b,x[i+2],15,718787259);b=ii(b,cc,d,a,x[i+9],21,-343485551);
+  a=c(a,oa);b=c(b,ob);cc=c(cc,oc);d=c(d,od)}
+ return[a,b,cc,d].map(v=>{let s="";for(let j=0;j<4;j++)s+=((v>>>(j*8))&255).toString(16).padStart(2,"0");return s}).join("")}
+
+const b64d=s=>{try{return decodeURIComponent(escape(atob(s.trim())))}catch(e){return null}};
+const b64e=s=>btoa(unescape(encodeURIComponent(s)));
+const rot13=s=>s.replace(/[a-z]/gi,ch=>{const b=ch<="Z"?65:97;return String.fromCharCode((ch.charCodeAt(0)-b+13)%26+b)});
+
+const HELP_LOCAL=`Commandes de ta machine (labo) :
+  ls, cd, cat, pwd, whoami, clear, history, echo
+  nmap [-sV] <ip>           scanner les ports
+  curl [-d "a=b&c=d"] <url> requête HTTP (GET, ou POST avec -d)
+  ssh <user>@<ip>           connexion à distance
+  ftp <ip>                  partage de fichiers
+  hashcheck <empreinte|fichier> wordlist.txt   attaque par dictionnaire
+  base64 [-d] · rot13 · xxd -r -p · grep · wc -l   (avec |)
+Sur la machine cible : ls -la, cat, cd, id, sudo -l, find, su, exit`;
+
+async function runPipeline(s,line){
+  const parts=splitPipes(line);let input=null,out="";
+  for(let i=0;i<parts.length;i++){const r=await runCmd(s,tokenize(parts[i].trim()),input,parts[i].trim());if(r===undefined)return;out=r;input=r}
+  return out}
+
+async function runCmd(s,a,stdin,raw){
+  const cmd=a[0];if(!cmd)return"";
+  const m=s.m,remote=s.host!=="labo";
+  const errRedirect=a.includes("2>/dev/null");a=a.filter(x=>x!=="2>/dev/null");
+  const getFile=p=>{const path=resolve(s,p);
+    if(!remote){return s.lfs[path]!==undefined?{c:s.lfs[path]}:(path==="/home/toi"||path==="/home"||path==="/"?{d:1}:null)}
+    return rfs(s)[path]||null};
+  switch(cmd){
+  case"help":return remote?"Sur "+m.name+" : ls [-la], cd, cat, pwd, whoami, id, sudo -l, find / -perm -4000 -type f 2>/dev/null, su <user>, history, grep, exit\n(et les outils | base64, rot13…)":HELP_LOCAL;
+  case"clear":s.out=[];return"";
+  case"pwd":return s.cwd;
+  case"whoami":return s.user;
+  case"id":return s.user==="root"?"uid=0(root) gid=0(root) groups=0(root)":remote?`uid=1001(${s.user}) gid=1001(${s.user}) groups=1001(${s.user})`:"uid=1000(toi) gid=1000(toi) groups=1000(toi)";
+  case"hostname":return remote?m.name.toLowerCase():"labo";
+  case"history":return s.hist.map((h,i)=>String(i+1).padStart(4)+"  "+h).join("\n");
+  case"echo":return a.slice(1).filter(x=>x!=="-n").join(" ");
+  case"base64":{const t=(stdin??"").trim();if(a.includes("-d")){const r=b64d(t);return r===null?"base64: entrée invalide":r.replace(/\n$/,"")}return b64e(stdin??"")}
+  case"rot13":return rot13(stdin??a.slice(1).join(" "));
+  case"xxd":{if(!(a.includes("-r")&&a.includes("-p")))return"xxd : dans ce labo, utilise xxd -r -p (hexadécimal → texte)";const h=(stdin??"").replace(/\s/g,"");
+    if(!/^([0-9a-f]{2})*$/i.test(h))return"xxd: entrée hexadécimale invalide";return h.match(/../g)?.map(x=>String.fromCharCode(parseInt(x,16))).join("")||""}
+  case"wc":return String((stdin??"").split("\n").filter(Boolean).length);
+  case"grep":{const pat=a.filter(x=>!x.startsWith("-"))[1];const iflag=a.includes("-i");let text=stdin;
+    const f=a.filter(x=>!x.startsWith("-"))[2];if(f){const n=getFile(f);if(!n||n.d)return"grep: "+f+": Aucun fichier ou dossier de ce type";if(remote&&!canRead(s,n))return"grep: "+f+": Permission non accordée";text=n.c}
+    if(!pat)return"usage : grep <motif> [fichier]";return(text||"").split("\n").filter(l=>iflag?l.toLowerCase().includes(pat.toLowerCase()):l.includes(pat)).join("\n")}
+  case"ls":{const long=a.some(x=>/^-[a-z]*l/.test(x)),all=a.some(x=>/^-[a-z]*a/.test(x));const target=a.filter(x=>!x.startsWith("-"))[1];const path=resolve(s,target||s.cwd);
+    if(!remote){const kids=Object.keys(s.lfs).filter(k=>k.startsWith(path+"/")).map(k=>k.slice(path.length+1).split("/")[0]);
+      if(s.lfs[path]!==undefined)return path.split("/").pop();return[...new Set(kids)].sort().join("  ")}
+    const node=rfs(s)[path];if(!node)return"ls: impossible d'accéder à '"+(target||path)+"': Aucun fichier ou dossier de ce type";
+    if(!node.d){return long?(node.m||"-rw-r--r--")+" 1 "+(node.o||"root")+" "+(node.o||"root")+" "+(node.c||"").length+" oct.  "+path:path}
+    if(!canRead(s,node))return"ls: impossible d'ouvrir le répertoire '"+(target||path)+"': Permission non accordée";
+    let kids=children(rfs(s),path);if(!all)kids=kids.filter(k=>!k.startsWith("."));
+    if(!long)return kids.join("  ");
+    return kids.map(k=>{const n=rfs(s)[(path==="/"?"":path)+"/"+k]||{d:1};const mm=n.d?"drwxr-x---".replace(/^d.{9}$/,n.r?"drwx------":"drwxr-xr-x"):(n.m||"-rw-r--r--");
+      return mm+" 1 "+(n.o||"root").padEnd(10)+" "+String(n.d?4096:(n.c||"").length).padStart(5)+" oct.  "+k}).join("\n")}
+  case"cd":{const path=resolve(s,a[1]);const n=remote?rfs(s)[path]:(path.startsWith("/home/toi")||path==="/home"||path==="/"?{d:1}:null);
+    if(!n)return"cd: "+(a[1]||"")+": Aucun fichier ou dossier de ce type";if(!n.d)return"cd: "+a[1]+": N'est pas un dossier";
+    if(remote&&!canRead(s,n))return"cd: "+a[1]+": Permission non accordée";s.cwd=path;return""}
+  case"cat":{if(!a[1])return stdin??"usage : cat <fichier>";const n=getFile(a[1]);if(!n)return"cat: "+a[1]+": Aucun fichier ou dossier de ce type";if(n.d)return"cat: "+a[1]+": est un dossier";
+    if(remote&&!canRead(s,n))return"cat: "+a[1]+": Permission non accordée";if(n.bin)return"(fichier binaire illisible)";return(n.c||"").replace(/\n$/,"")}
+  case"file":{const n=getFile(a[1]||"");if(!n)return"file: introuvable";return a[1]+": "+(n.d?"directory":n.bin?"ELF 64-bit LSB executable"+(n.m&&n.m[3]==="s"?", setuid":""):"ASCII text")}
+  case"sudo":if(a[1]==="-l"){if(!remote)return"toi n'a pas besoin de sudo dans ce labo.";return s.user==="root"?"(ALL : ALL) ALL":"Désolé, l'utilisateur "+s.user+" ne peut pas utiliser sudo sur "+m.name.toLowerCase()+"."}
+    return"sudo: le mot de passe de "+s.user+" n'autorise pas sudo ici. Essaie sudo -l pour lister tes droits.";
+  case"find":{if(!remote)return"find : utilise-le sur la machine cible.";const perm=a.indexOf("-perm");const nm=a.indexOf("-name");
+    let res=Object.keys(rfs(s)).filter(k=>!rfs(s)[k].d);
+    if(perm>-1&&/4000/.test(a[perm+1]))res=res.filter(k=>(rfs(s)[k].m||"")[3]==="s");
+    if(nm>-1){const pat=a[nm+1].replace(/\*/g,"");res=res.filter(k=>k.split("/").pop().includes(pat))}
+    const hidden=res.filter(k=>!canRead(s,rfs(s)[k.substring(0,k.lastIndexOf("/"))||"/"]||{}));
+    let out=res.filter(k=>!hidden.includes(k)).join("\n");
+    if(!errRedirect&&hidden.length)out+="\nfind: '/root': Permission non accordée\nfind: '/proc/1/fd': Permission non accordée";
+    return out.trim()}
+  case"exit":case"logout":
+    if(s.mode==="ftp"){s.mode=null;return"221 Au revoir."}
+    if(s.stack.length){const prev=s.stack.pop();Object.assign(s,prev);return"déconnexion"}
+    return"Tu es déjà sur ta machine. Utilise ← Labo pour quitter.";
+  case"nmap":{if(remote)return"nmap : lance-le depuis ta machine (exit pour revenir).";const ip=a.filter(x=>!x.startsWith("-"))[1];
+    if(!ip)return"usage : nmap [-sV] <ip>";
+    if(ip!==m.ip){if(MACHINES.some(x=>x.ip===ip))return"Cette cible appartient à une autre mission. Ouvre la machine correspondante depuis l'onglet Labo.";
+      return"Cible hors périmètre. Dans ce labo, seule "+m.ip+" est autorisée — et dans la vraie vie, jamais sans autorisation écrite."}
+    const sv=a.includes("-sV");await new Promise(r=>setTimeout(r,500));
+    return"Starting Nmap 7.94 ( https://nmap.org )\nNmap scan report for "+m.ip+"\nHost is up (0.012s latency).\nNot shown: 998 closed tcp ports (conn-refused)\nPORT      STATE     SERVICE"+(sv?"  VERSION":"")+"\n"+
+      m.ports.map(p=>(p[0].padEnd(10))+p[1].padEnd(10)+p[2].padEnd(sv?9:0)+(sv?p[3]:"")).join("\n")+"\n\nNmap done: 1 IP address (1 host up) scanned"+(sv?"\nAstuce : -sV a identifié les versions. Note-les dans ton rapport.":"\nAstuce : ajoute -sV pour identifier les versions.")}
+  case"curl":{if(remote)return"curl : lance-le depuis ta machine.";let data=null;const di=a.indexOf("-d");if(di>-1){data=a[di+1]||"";a.splice(di,2)}
+    const url=a.filter(x=>!x.startsWith("-"))[1];if(!url)return"usage : curl [-d \"user=…&pass=…\"] http://ip/chemin";
+    const mm=url.match(/^(?:https?:\/\/)?([\d.]+)(\/[^\s]*)?$/);if(!mm)return"curl: (6) Could not resolve host";
+    if(mm[1]!==m.ip)return"curl: (7) Hors périmètre : seule "+m.ip+" est autorisée dans cette mission.";
+    if(!m.ports.some(p=>p[2]==="http"&&p[1]==="open"))return"curl: (7) Failed to connect to "+m.ip+" port 80: Connection refused";
+    return webRoute(s,mm[2]||"/",data)}
+  case"ftp":{if(remote)return"ftp : lance-le depuis ta machine.";if(a[1]!==m.ip)return"ftp: hors périmètre ou hôte inconnu.";
+    if(!m.ftp)return"ftp: connect: Connection refused";s.mode="ftp-user";return"Connected to "+m.ip+".\n220 (vsFTPd 3.0.5)"}
+  case"get":{if(s.mode!=="ftp")return"get : commande FTP (connecte-toi d'abord avec ftp <ip>).";const f=a[1];if(!f||!(f in m.ftp))return"550 Échec de l'ouverture du fichier.";
+    s.lfs["/home/toi/"+f]=m.ftp[f];return"226 Transfert terminé. "+f+" est maintenant dans ton dossier (/home/toi) — quitte FTP (exit) pour le lire."}
+  case"ssh":{if(remote)return"ssh : quitte d'abord cette session (exit).";const mm=(a[1]||"").match(/^([\w.-]+)@([\d.]+)$/);if(!mm)return"usage : ssh <utilisateur>@<ip>";
+    if(mm[2]!==m.ip)return"ssh: hors périmètre.";if(!m.ports.some(p=>p[2]==="ssh"))return"ssh: connect to host "+m.ip+" port 22: Connection refused";
+    s.mode="ssh-pass";s.pending={user:mm[1]};return mm[1]+"@"+m.ip+"'s password:"}
+  case"su":{if(!remote)return"su : utilise-le sur la machine cible.";const u=a[1]||"root";s.mode="su-pass";s.pending={user:u};return"Mot de passe :"}
+  case"hashcheck":{if(remote)return"hashcheck : lance-le depuis ta machine.";const target=a[1],wl=a[2];if(!target||!wl)return"usage : hashcheck <empreinte|fichier> wordlist.txt";
+    let h=(s.lfs[resolve(s,target)]??target).trim().toLowerCase();const w=s.lfs[resolve(s,wl)];if(w===undefined)return"hashcheck: "+wl+" introuvable";
+    const algo=h.length===32?"md5":h.length===64?"sha256":null;if(!algo)return"hashcheck: format d'empreinte non reconnu (MD5 = 32 caractères, SHA-256 = 64)";
+    const words=w.split("\n").filter(Boolean);for(const x of words){if(await sha(algo,x)===h)return"["+algo.toUpperCase()+"] "+words.length+" mots testés.\nTrouvé : "+x+"\nUn algorithme rapide sans sel se devine en une fraction de seconde. D'où Argon2/bcrypt."}
+    return"["+algo.toUpperCase()+"] "+words.length+" mots testés. Aucun résultat."}
+  case"lecteur":{if(!remote||m.id!=="m2")return cmd+": commande introuvable";if(!a[1])return"lecteur — affiche un document d'archive\nusage : lecteur <fichier>";
+    const n=rfs(s)[resolve(s,a[1])];if(!n||n.d)return"lecteur: document introuvable";return"[lecteur] (exécuté avec les droits de root grâce au bit SUID)\n"+(n.c||"").replace(/\n$/,"")}
+  case"/usr/local/bin/lecteur":return runCmd(s,["lecteur",...a.slice(1)],stdin);
+  case"sh":case"bash":case"./sauvegarde.sh":case"/opt/sauvegarde.sh":return remote?"(le script tente une sauvegarde et échoue : mysqldump n'est pas installé ici)":cmd+": commande introuvable";
+  default:return cmd+": commande introuvable (tape help)"}}
+
+function webRoute(s,path,data){const m=s.m;
+  if(m.web){const p=path.split("?")[0];return m.web[p]??"404 Not Found"}
+  if(m.id!=="m3")return"404 Not Found";
+  const [p,qs]=path.split("?");const q=new URLSearchParams(qs||"");
+  if(p==="/")return`<!doctype html>
+<html><head><title>FacturePro — Espace clients</title></head>
+<body>
+  <h1>FacturePro</h1>
+  <p>Consultez vos factures en ligne.</p>
+  <form method="POST" action="/login">user / pass</form>
+  <p>Compte de démonstration : demo / demo</p>
+</body></html>`;
+  if(p==="/robots.txt")return"User-agent: *\nDisallow: /admin";
+  if(p==="/admin")return"302 Found → /login (connexion administrateur requise)";
+  if(p==="/login"){if(data===null)return"405 Method Not Allowed — envoie les identifiants en POST : curl -d \"user=…&pass=…\" http://"+m.ip+"/login";
+    const f=new URLSearchParams(data);const u=f.get("user")??"",pw=f.get("pass")??"";
+    const query="SELECT * FROM users WHERE user='"+u+"' AND pass='"+pw+"'";
+    const ok=sqlEval(u,pw);
+    if(ok==="error")return"500 Internal Server Error\nErreur SQL : syntax error near \"'\"\nRequête : "+query+"\n\n(Une application sûre n'afficherait jamais ce message… et utiliserait une requête préparée.)";
+    if(ok==="admin")return"200 OK\nBienvenue admin.\nPanneau d'administration — clé de déploiement : "+m.flags.root+"\n\nRequête exécutée : "+query;
+    if(ok==="demo")return"200 OK\nBienvenue demo.\nVos factures : /facture?id=1042";
+    if(ok)return"200 OK\nBienvenue "+ok+".";
+    return"401 Unauthorized\nIdentifiants incorrects."}
+  if(p==="/facture"){const id=q.get("id");const F={"1042":"Facture n°1042 — client : demo — Abonnement fibre — 25 000 FCFA","1001":"Facture n°1001 — client : admin — Licence serveur annuelle\nRéférence interne : "+m.flags.user,"1043":"Facture n°1043 — client : k.ouedraogo — Installation — 40 000 FCFA"};
+    if(!id)return"400 Bad Request — paramètre id manquant";return F[id]?"200 OK\n"+F[id]+(id!=="1042"?"\n\n(Tu vois la facture d'un autre client : c'est une IDOR. Le serveur ne vérifie pas à qui elle appartient.)":""):"404 Facture introuvable"}
+  return"404 Not Found"}
+/* Mini moteur SQL simulé : assez fidèle pour montrer pourquoi coller une saisie dans une requête est dangereux */
+const USERS_TABLE=[{user:"admin",pass:"Xk9#vQ2!mZ"},{user:"demo",pass:"demo"},{user:"k.ouedraogo",pass:"Baobab!77"}];
+function sqlEval(u,pw){
+  const where="user='"+u+"' AND pass='"+pw+"'";
+  let clause="",inStr=false;
+  for(let i=0;i<where.length;i++){const ch=where[i];
+    if(ch==="'"){inStr=!inStr;clause+=ch;continue}
+    if(!inStr&&(ch==="#"||(ch==="-"&&where[i+1]==="-")))break;
+    clause+=ch}
+  if(inStr)return"error";
+  const toks=[];const re=/\s*(?:'([^']*)'|(\d+)|(=)|(\()|(\))|([A-Za-z_]+))/y;let m,pos=0;const c=clause.trim();
+  re.lastIndex=0;
+  while(pos<c.length){re.lastIndex=pos;m=re.exec(c);if(!m||m.index!==pos)return"error";pos=re.lastIndex;
+    if(m[1]!==undefined)toks.push({v:m[1]});else if(m[2])toks.push({v:m[2]});else if(m[3])toks.push({op:"="});else if(m[4]||m[5]){}else{const w=m[6].toLowerCase();
+      if(w==="and"||w==="or")toks.push({op:w});else if(w==="true")toks.push({v:"1"});else if(w==="user"||w==="pass")toks.push({id:w});else return"error"}
+    while(pos<c.length&&/\s/.test(c[pos]))pos++}
+  // expr = term (or term)* ; term = cmp (and cmp)* ; cmp = val [= val]
+  let i=0;const val=row=>{const t=toks[i++];if(!t||t.op)throw 0;return t.id?row[t.id]:t.v};
+  const cmp=row=>{const a=val(row);if(toks[i]&&toks[i].op==="="){i++;return a===val(row)}return a!==""&&a!=="0"};
+  const term=row=>{let r=cmp(row);while(toks[i]&&toks[i].op==="and"){i++;r=cmp(row)&&r}return r};
+  const expr=row=>{let r=term(row);while(toks[i]&&toks[i].op==="or"){i++;r=term(row)||r}return r};
+  try{for(const row of USERS_TABLE){i=0;const r=expr(row);if(i!==toks.length)return"error";if(r)return row.user}}catch(e){return"error"}
+  return null}
+
+/* ---------- Fiche machine ---------- */
+function openMachine(m){
+  const s=sessions[m.id]||(sessions[m.id]=newSession(m));
+  const sh=$("#sheet");
+  sh.innerHTML=`<div class="sheet-in">
+   <div class="sheet-bar"><button class="btn ghost" id="close">← Labo</button><span class="pill diff">${m.diff} · ${m.ip}</span></div>
+   <div class="eyebrow">Machine · ${m.os}</div><h2 id="sheetTitle">${m.name}</h2>
+   <details class="blk"><summary><b>Mission</b> — ordre de mission et autorisation</summary><p style="margin-top:8px">${esc(m.brief)}</p></details>
+   <div class="term" id="term"><div id="tout"></div>
+     <form id="tform" class="tline"><label for="tin" class="tprompt" id="tprompt"></label><input id="tin" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="go"></form></div>
+   <div class="chips" id="chips">${m.chips.map((c,i)=>`<button class="chip" data-i="${i}">${esc(c.trim()||c)}</button>`).join("")}<button class="chip" data-k="up">↑ précédente</button></div>
+   <div class="blk"><h4>Drapeaux</h4>
+     ${["user","root"].map(k=>`<form class="flagform" data-k="${k}"><input id="mf-${m.id}-${k}" class="search" placeholder="${k}.txt : flag{…}" autocapitalize="off" autocomplete="off" spellcheck="false" ${solved(m.id+k[0])?'value="'+m.flags[k]+'" disabled':""}><button class="btn" ${solved(m.id+k[0])?"disabled":""}>${solved(m.id+k[0])?"✓":"Valider"}</button></form>`).join("")}
+     <p class="hint" id="mres" role="status"></p></div>
+   <div class="blk"><h4>Indices</h4><p class="hint">Essaie d'abord seul. Chaque indice révèle un peu plus.</p><button class="copy" id="hintb">Indice suivant (0/${m.hints.length})</button><ol id="hlist" class="hlist"></ol></div>
+   <div class="blk" id="lesson" ${solved(m.id+"r")?"":"hidden"}><h4>Débrief · ce qu'il fallait corriger</h4><p>${esc(m.lesson)}</p></div></div>`;
+  openSheetCommon();
+  $("#close").onclick=()=>{closeSheet();renderLabo()};
+  const tin=$("#tin");
+  const draw=()=>{const o=$("#tout");o.innerHTML=s.out.map(x=>`<div class="${x.c||""}">${esc(x.t)}</div>`).join("");
+    $("#tprompt").textContent=s.mode==="ssh-pass"||s.mode==="su-pass"?"":s.mode==="ftp-user"?"Name ("+m.ip+":toi): ":s.mode==="ftp-pass"?"Password: ":prompt(s);
+    tin.type=(s.mode==="ssh-pass"||s.mode==="su-pass"||s.mode==="ftp-pass")?"password":"text";const t=$("#term");t.scrollTop=t.scrollHeight};
+  draw();
+  let hn=s.hintsShown||0;const showHints=()=>{$("#hlist").innerHTML=m.hints.slice(0,hn).map(h=>`<li>${esc(h)}</li>`).join("");$("#hintb").textContent=hn>=m.hints.length?"Tous les indices sont affichés":`Indice suivant (${hn}/${m.hints.length})`};showHints();
+  $("#hintb").onclick=()=>{if(hn<m.hints.length){hn++;s.hintsShown=hn;showHints()}};
+  $("#tform").onsubmit=async e=>{e.preventDefault();const line=tin.value;tin.value="";
+    if(s.mode==="ssh-pass"||s.mode==="su-pass"){const u=s.pending.user,ok=m.users&&m.users[u]===line;
+      if(s.mode==="ssh-pass"){s.out.push({t:"********"});if(ok){s.stack.push({host:s.host,user:s.user,cwd:s.cwd});s.host=m.ip;s.user=u;s.cwd=u==="root"?"/root":"/home/"+u;s.out.push({t:"Welcome to Ubuntu 22.04 LTS\nLast login: Thu Oct 30 21:04:11 2026",c:"sys"})}else s.out.push({t:"Permission denied, please try again.",c:"err"})}
+      else{if(ok){s.stack.push({host:s.host,user:s.user,cwd:s.cwd});s.user=u;s.cwd=u==="root"?"/root":"/home/"+u;s.out.push({t:"(connecté en tant que "+u+")",c:"sys"})}else s.out.push({t:"su : Échec de l'authentification",c:"err"})}
+      s.mode=null;draw();return}
+    if(s.mode==="ftp-user"){s.out.push({t:"Name: "+line});if(line.trim().toLowerCase()==="anonymous"){s.mode="ftp-pass"}else{s.out.push({t:"530 Login incorrect.",c:"err"});s.mode=null}draw();return}
+    if(s.mode==="ftp-pass"){s.out.push({t:"Password:\n230 Login successful.\nRemote system type is UNIX.\nCommandes : ls, get <fichier>, exit",c:"sys"});s.mode="ftp";draw();return}
+    s.out.push({t:prompt(s)+line,c:"cmd"});if(line.trim()){s.hist.push(line);s.hi=s.hist.length}
+    let res;
+    if(s.mode==="ftp"){const a=tokenize(line);if(a[0]==="ls"||a[0]==="dir")res="-rw-r--r--  1 ftp ftp  "+Object.keys(m.ftp).map(k=>k).join("\n-rw-r--r--  1 ftp ftp  ");else if(a[0]==="get"||a[0]==="exit"||a[0]==="bye"||a[0]==="quit")res=await runCmd(s,a[0]==="bye"||a[0]==="quit"?["exit"]:a,null);else res="?Commande invalide (ls, get, exit)"}
+    else res=await runPipeline(s,line);
+    if(res)s.out.push({t:res,c:!/^(Starting Nmap|200 OK)/.test(res)&&/^[\w\/.-]+: |commande introuvable|Permission denied|Échec|^\d{3} (?!OK)/.test(res)?"err":""});
+    if(s.out.length>300)s.out=s.out.slice(-300);draw();
+    // détection automatique des drapeaux affichés
+    ["user","root"].forEach(k=>{if(res&&res.includes(m.flags[k])&&!solved(m.id+k[0]))$("#mres").textContent="Un drapeau vient de s'afficher : copie-le dans le champ "+k+"."});
+  };
+  $("#chips").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;
+    if(b.dataset.k==="up"){if(s.hist.length){s.hi=Math.max(0,s.hi-1);tin.value=s.hist[s.hi]}}else tin.value=m.chips[+b.dataset.i];tin.focus();try{tin.setSelectionRange(tin.value.length,tin.value.length)}catch(_){} };
+  tin.addEventListener("keydown",e=>{if(e.key==="ArrowUp"){e.preventDefault();if(s.hist.length){s.hi=Math.max(0,s.hi-1);tin.value=s.hist[s.hi]}}
+    if(e.key==="ArrowDown"){e.preventDefault();s.hi=Math.min(s.hist.length,s.hi+1);tin.value=s.hist[s.hi]||""}});
+  $("#term").onclick=e=>{if(!getSelection().toString())tin.focus()};
+  sh.querySelectorAll(".flagform[data-k]").forEach(f=>f.onsubmit=e=>{e.preventDefault();const k=f.dataset.k,inp=f.querySelector("input");
+    if(sameFlag(inp.value,m.flags[k])){markSolved(m.id+k[0],k==="user"?"Accès utilisateur : +20 points":"Machine rootée : +30 points");inp.disabled=true;f.querySelector("button").disabled=true;f.querySelector("button").textContent="✓";$("#mres").textContent=k==="root"?"Machine terminée. Lis le débrief ci-dessous.":"Drapeau user validé. Maintenant, deviens root.";if(k==="root")$("#lesson").hidden=false}
+    else $("#mres").textContent="Ce n'est pas le bon drapeau pour "+k+".txt."});
+}
+function openSheetCommon(){const sh=$("#sheet");sh.hidden=false;sh.scrollTop=0;document.body.style.overflow="hidden";curDay=0}
+function closeSheet(){$("#sheet").hidden=true;document.body.style.overflow="";try{history.replaceState(null,"","#labo")}catch(e){}}
+
+</script>
+</body>
+</html>

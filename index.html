@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0f14">
+<meta name="description" content="Rooted : apprends le hacking éthique depuis ton téléphone. Un parcours de 30 jours, des machines à rooter et des défis CTF, dans ton navigateur.">
+<title>Rooted · Hacking éthique</title>
+<link rel="icon" href="assets/logos/rooted-icone.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+html{background:#0b0f14;color-scheme:dark;scroll-behavior:smooth}
+body{margin:0}
+a{color:#ffb020}a:hover{color:#ffc65c}
+:focus-visible{outline:2px solid #5cc8ff;outline-offset:2px}
+.cur{display:inline-block}
+@media (prefers-reduced-motion:no-preference){.cur{animation:blink 1s steps(1) infinite}@keyframes blink{50%{opacity:0}}}
+</style>
+</head>
+<body>
+<div style="background: #0b0f14; color: #e6edf3; font-family: 'IBM Plex Sans', system-ui, sans-serif; min-height: 100%">
+
+  <header style="border-bottom: 1px solid #1f2a36">
+    <div style="max-width: 1180px; margin: 0 auto; padding: 18px 24px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap">
+      <a href="index.html" style="font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 20px; color: #e6edf3; text-decoration: none">rooted<span class="cur" style="display: inline-block; width: 10px; height: 19px; background: #ffb020; margin-left: 3px; vertical-align: -3px"></span></a>
+      <nav aria-label="Menu" style="display: flex; gap: 22px; flex-wrap: wrap; flex: 1; font-size: 15px">
+        <a href="#comment" style="color: #c4ccd6; text-decoration: none">Comment ça marche</a>
+        <a href="#labo" style="color: #c4ccd6; text-decoration: none">Le labo</a>
+        <a href="#tarif" style="color: #c4ccd6; text-decoration: none">Tarif</a>
+        <a href="#regles" style="color: #c4ccd6; text-decoration: none">Nos règles</a>
+      </nav>
+      <div style="display: flex; gap: 10px">
+        <a href="app.html" style="padding: 10px 16px; border-radius: 10px; border: 1px solid #33414f; color: #e6edf3; text-decoration: none; font-size: 15px">Se connecter</a>
+        <a href="app.html" style="padding: 10px 16px; border-radius: 10px; background: #ffb020; color: #0b0f14; text-decoration: none; font-size: 15px; font-weight: 600">Commencer</a>
+      </div>
+    </div>
+  </header>
+
+  <section style="max-width: 1180px; margin: 0 auto; padding: 72px 24px 64px; display: flex; flex-wrap: wrap; gap: 48px; align-items: center">
+    <div style="flex: 1 1 460px; min-width: 0; display: flex; flex-direction: column; gap: 22px">
+      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #ffb020">// hacking éthique · en français · depuis ton téléphone</span>
+      <h1 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: clamp(38px, 5.4vw, 64px); line-height: 1.02; letter-spacing: -0.02em">Apprends à trouver les failles. Pour mieux les corriger.</h1>
+      <p style="margin: 0; font-size: 19px; line-height: 1.55; color: #c4ccd6; max-width: 540px">Un parcours de 30 jours, des machines à rooter et des défis CTF, directement dans ton navigateur. Pas d'ordinateur nécessaire, pas d'installation, et tout est légal.</p>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap">
+        <a href="app.html" style="height: 54px; padding: 0 24px; border-radius: 12px; background: #ffb020; color: #0b0f14; display: inline-flex; align-items: center; font-weight: 600; font-size: 17px; text-decoration: none">Commencer le jour 1</a>
+        <a href="#labo" style="height: 54px; padding: 0 24px; border-radius: 12px; border: 1px solid #33414f; color: #e6edf3; display: inline-flex; align-items: center; font-size: 17px; text-decoration: none">Voir le labo</a>
+      </div>
+      <span style="font-size: 14px; color: #8b98a8">Fonctionne sur un Android d'entrée de gamme. Rien à installer.</span>
+    </div>
+    <div style="flex: 1 1 420px; min-width: 0; background: #05080b; border: 1px solid #1f2a36; border-radius: 16px; overflow: hidden">
+      <div style="display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-bottom: 1px solid #141c26">
+        <span style="width: 10px; height: 10px; border-radius: 50%; background: #33414f"></span><span style="width: 10px; height: 10px; border-radius: 50%; background: #33414f"></span><span style="width: 10px; height: 10px; border-radius: 50%; background: #33414f"></span>
+        <span style="margin-left: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #8b98a8">labo · cible autorisée 10.10.0.11</span>
+      </div>
+      <div style="padding: 18px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; color: #c9d4de; overflow-x: auto"><span style="color: #ffb020">toi@labo:~$</span> nmap -sV 10.10.0.11
+PORT     STATE  SERVICE  VERSION
+22/tcp   open   ssh      OpenSSH 8.9p1
+80/tcp   open   http     nginx 1.18.0
+
+<span style="color: #ffb020">toi@labo:~$</span> curl http://10.10.0.11/
+&lt;!-- TODO : supprimer le compte de test --&gt;
+
+<span style="color: #3ddc97">✓ Drapeau user trouvé · +20 pts</span>
+<span style="color: #8b98a8">Indice : regarde les scripts de sauvegarde…</span></div>
+    </div>
+  </section>
+
+  <section id="comment" style="border-top: 1px solid #1f2a36; background: #0e141b">
+    <div style="max-width: 1180px; margin: 0 auto; padding: 64px 24px; display: flex; flex-direction: column; gap: 32px">
+      <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 36px">Comment ça marche</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px">
+        <div style="background: #121922; border: 1px solid #1f2a36; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 10px">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #ffb020">étape 1</span>
+          <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 22px">Apprends 1 h par jour</h3>
+          <p style="margin: 0; color: #c4ccd6; line-height: 1.55">Chaque jour : une notion courte, un exercice pratique, une question de validation. Linux, réseaux, web, mots de passe, défense.</p>
+        </div>
+        <div style="background: #121922; border: 1px solid #1f2a36; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 10px">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #ffb020">étape 2</span>
+          <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 22px">Pratique sur des machines</h3>
+          <p style="margin: 0; color: #c4ccd6; line-height: 1.55">Un vrai terminal dans ton navigateur. Scanne, énumère, trouve le drapeau user, puis deviens root.</p>
+        </div>
+        <div style="background: #121922; border: 1px solid #1f2a36; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 10px">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #ffb020">étape 3</span>
+          <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 22px">Comprends la correction</h3>
+          <p style="margin: 0; color: #c4ccd6; line-height: 1.55">Après chaque machine, un débrief explique la faille et comment la corriger. C'est ça, le métier.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="labo" style="max-width: 1180px; margin: 0 auto; padding: 72px 24px; display: flex; flex-wrap: wrap; gap: 48px; align-items: flex-start">
+    <div style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+      <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 36px">Le labo</h2>
+      <p style="margin: 0; color: #c4ccd6; font-size: 17px; line-height: 1.6">Des machines conçues pour être attaquées, classées par difficulté. Chacune a deux drapeaux, des indices progressifs et un débrief.</p>
+      <ul style="margin: 0; padding-left: 20px; color: #c4ccd6; line-height: 1.9">
+        <li>Des boutons de commandes pour taper vite sur l'écran tactile</li>
+        <li>Ta progression est enregistrée sur ton téléphone</li>
+        <li>Défis CTF de 5 minutes pour les trajets</li>
+      </ul>
+    </div>
+    <div style="flex: 1 1 520px; min-width: 0; background: #121922; border: 1px solid #1f2a36; border-radius: 16px; overflow-x: auto">
+      <table style="width: 100%; border-collapse: collapse; font-size: 15px; min-width: 460px">
+        <thead><tr style="text-align: left; color: #8b98a8; font-family: 'IBM Plex Mono', monospace; font-size: 12px"><th style="padding: 14px 18px; font-weight: 500">MACHINE</th><th style="padding: 14px 18px; font-weight: 500">THÈME</th><th style="padding: 14px 18px; font-weight: 500">NIVEAU</th></tr></thead>
+        <tbody>
+          <tr style="border-top: 1px solid #1f2a36"><td style="padding: 14px 18px; font-weight: 600">Boulangerie</td><td style="padding: 14px 18px; color: #c4ccd6">Code source, secrets en clair</td><td style="padding: 14px 18px"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 4px 8px; border-radius: 6px; background: #10261c; color: #3ddc97">Facile</span></td></tr>
+          <tr style="border-top: 1px solid #1f2a36"><td style="padding: 14px 18px; font-weight: 600">Archives</td><td style="padding: 14px 18px; color: #c4ccd6">FTP, hachage, SUID</td><td style="padding: 14px 18px"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 4px 8px; border-radius: 6px; background: #10261c; color: #3ddc97">Facile+</span></td></tr>
+          <tr style="border-top: 1px solid #1f2a36"><td style="padding: 14px 18px; font-weight: 600">Portail</td><td style="padding: 14px 18px; color: #c4ccd6">IDOR, injection SQL</td><td style="padding: 14px 18px"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 4px 8px; border-radius: 6px; background: #2a210b; color: #ffb020">Moyen</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="tarif" style="border-top: 1px solid #1f2a36">
+    <div style="max-width: 1180px; margin: 0 auto; padding: 72px 24px; display: flex; flex-direction: column; gap: 28px">
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 36px">Un tarif simple</h2>
+        <p style="margin: 0; color: #c4ccd6; font-size: 17px; line-height: 1.6; max-width: 620px">Commence gratuitement. L’abonnement Membre arrive bientôt pour tout débloquer. Paiement par mobile money, sans carte bancaire.</p>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px">
+        <div style="background: #121922; border: 1px solid #1f2a36; border-radius: 18px; padding: 26px; display: flex; flex-direction: column; gap: 16px">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #8b98a8">DÉCOUVERTE</span>
+          <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 40px">Gratuit</span>
+          <div style="display: flex; flex-direction: column; gap: 8px; color: #c4ccd6; font-size: 15.5px">
+            <span>✓ Les 30 jours du parcours</span>
+            <span>✓ Les 3 machines du labo</span>
+            <span>✓ Les 12 défis CTF</span>
+          </div>
+          <div style="flex: 1"></div>
+          <a href="app.html" style="height: 52px; border-radius: 12px; border: 1px solid #33414f; color: #e6edf3; display: flex; align-items: center; justify-content: center; font-size: 16px; text-decoration: none">Commencer gratuitement</a>
+        </div>
+        <div style="background: #121922; border: 1.5px solid #ffb020; border-radius: 18px; padding: 26px; display: flex; flex-direction: column; gap: 16px">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #ffb020">MEMBRE</span><span style="font-size: 12.5px; padding: 4px 10px; border-radius: 999px; background: #2a210b; color: #ffb020">sans engagement</span></div>
+          <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 40px">5 000 FCFA <span style="font-size: 17px; font-weight: 500; color: #8b98a8">/ mois</span></span>
+          <div style="display: flex; flex-direction: column; gap: 8px; color: #c4ccd6; font-size: 15.5px">
+            <span>✓ Les 30 jours du parcours</span>
+            <span>✓ Toutes les machines et tous les défis</span>
+            <span>✓ Débriefs et rapport téléchargeable</span>
+            <span>✓ Pas de renouvellement automatique : un rappel par SMS</span>
+          </div>
+          <div style="flex: 1"></div>
+          <span aria-disabled="true" style="height: 52px; border-radius: 12px; background: #2a210b; color: #ffb020; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 16px">Bientôt disponible</span>
+        </div>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+        <span style="font-size: 14px; color: #8b98a8">Payable avec</span>
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13.5px; padding: 7px 12px; border-radius: 8px; border: 1px solid #1f2a36">Orange Money</span>
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13.5px; padding: 7px 12px; border-radius: 8px; border: 1px solid #1f2a36">Moov Money</span>
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13.5px; padding: 7px 12px; border-radius: 8px; border: 1px solid #1f2a36">Wave</span>
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13.5px; padding: 7px 12px; border-radius: 8px; border: 1px solid #1f2a36">NanaPay</span>
+        <span style="font-size: 14px; color: #8b98a8">· paiement sécurisé par LigdiCash et CinetPay</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="regles" style="border-top: 1px solid #1f2a36; background: #0e141b">
+    <div style="max-width: 1180px; margin: 0 auto; padding: 64px 24px; display: flex; flex-wrap: wrap; gap: 32px; align-items: center">
+      <div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+        <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 36px">Une seule règle : l'autorisation.</h2>
+        <p style="margin: 0; color: #c4ccd6; font-size: 17px; line-height: 1.6">Sur Rooted, tu ne pratiques que sur des machines prévues pour ça. Ailleurs, tester un système sans l'accord écrit de son propriétaire est illégal. On t'apprend aussi à signaler une faille de façon responsable.</p>
+      </div>
+      <div style="flex: 1 1 360px; min-width: 0; background: #121922; border: 1px solid #1f2a36; border-radius: 16px; padding: 22px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; line-height: 1.8; color: #c4ccd6">
+        <div><span style="color: #3ddc97">✓</span> tes appareils</div>
+        <div><span style="color: #3ddc97">✓</span> les machines du labo</div>
+        <div><span style="color: #3ddc97">✓</span> les programmes de bug bounty, dans leur périmètre</div>
+        <div><span style="color: #ff6b6b">✗</span> tout le reste, sans accord écrit</div>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width: 1180px; margin: 0 auto; padding: 80px 24px; display: flex; flex-direction: column; align-items: flex-start; gap: 20px">
+    <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: clamp(32px, 4vw, 48px); line-height: 1.05; max-width: 760px">Ton premier scan est à 20 secondes d'ici.</h2>
+    <a href="app.html" style="height: 56px; padding: 0 26px; border-radius: 12px; background: #ffb020; color: #0b0f14; display: inline-flex; align-items: center; font-weight: 600; font-size: 17px; text-decoration: none">Créer mon parcours</a>
+  </section>
+
+  <footer style="border-top: 1px solid #1f2a36">
+    <div style="max-width: 1180px; margin: 0 auto; padding: 24px; display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; font-size: 14px; color: #8b98a8">
+      <span>rooted · plateforme d'apprentissage du hacking éthique</span>
+      <span><a href="docs/charte-graphique.md" style="color:#8b98a8">Charte graphique</a> · <a href="docs/Programme_30_jours_Hacking_Ethique.pdf" style="color:#8b98a8">Programme 30 jours (PDF)</a> · <a href="docs/Cours_Hacking_Ethique_Fondamentaux.pdf" style="color:#8b98a8">Cours (PDF)</a></span>
+    </div>
+  </footer>
+</div>
+</body>
+</html>
