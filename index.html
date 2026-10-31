@@ -16,35 +16,12 @@ a{color:#ffb020}a:hover{color:#ffc65c}
 :focus-visible{outline:2px solid #5cc8ff;outline-offset:2px}
 .cur{display:inline-block}
 @media (prefers-reduced-motion:no-preference){.cur{animation:blink 1s steps(1) infinite}@keyframes blink{50%{opacity:0}}}
-.hero-art{position:relative;flex:1 1 420px;min-width:0;max-width:520px;height:600px;margin:0 auto}
-.ha-dots{position:absolute;left:0;top:24px;width:176px;height:144px;background-image:radial-gradient(#33414f 2px,transparent 2.5px);background-size:16px 16px}
-.ha-slab{position:absolute;right:6%;top:0;width:44px;height:220px;background:#ffb020}
-.ha-term{position:absolute;left:0;bottom:56px;width:62%;max-width:300px;background:#05080b;border:1px solid #1f2a36;border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.45);z-index:1}
-.ha-term-bar{display:flex;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid #141c26;font:400 11px 'IBM Plex Mono',monospace;color:#8b98a8}
-.ha-term-bar i{width:8px;height:8px;border-radius:50%;background:#33414f}.ha-term-bar span{margin-left:6px}
-.ha-term-body{padding:12px;font:400 12px/1.6 'IBM Plex Mono',monospace;color:#c9d4de;white-space:pre-wrap}
-.ha-term-body b{color:#ffb020;font-weight:500}.ha-term-body em{color:#3ddc97;font-style:normal}
-.ha-phone{position:absolute;right:0;top:20px;width:290px;height:580px;box-sizing:border-box;background:#1a2430;border-radius:44px;padding:10px;box-shadow:0 30px 80px rgba(0,0,0,.55);z-index:2}
-.ha-screen{height:100%;box-sizing:border-box;background:#0b0f14;border-radius:34px;padding:22px 16px 0;display:flex;flex-direction:column;gap:12px;overflow:hidden;font-family:'IBM Plex Sans',system-ui,sans-serif;color:#e6edf3}
-.ha-top{display:flex;justify-content:space-between;align-items:center}
-.ha-logo{font:600 15px 'IBM Plex Mono',monospace}.ha-logo .cur{width:7px;height:14px;background:#ffb020;margin-left:2px;vertical-align:-2px}
-.ha-chip{font:400 11px 'IBM Plex Mono',monospace;border:1px solid #263241;border-radius:999px;padding:4px 8px}
-.ha-eyebrow{font:400 10px 'IBM Plex Mono',monospace;color:#8b98a8}
-.ha-h{font:600 20px/1.15 'Chakra Petch',sans-serif}
-.ha-card{background:#121922;border:1px solid #1f2a36;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
-.ha-row{display:flex;justify-content:space-between;font:400 9px 'IBM Plex Mono',monospace;color:#8b98a8;letter-spacing:.06em}.ha-amber{color:#ffb020}
-.ha-title{font:600 15px 'Chakra Petch',sans-serif}
-.ha-step{display:flex;align-items:center;gap:7px;font-size:11px;color:#8b98a8}
-.ha-step i{width:13px;height:13px;border-radius:50%;box-sizing:border-box;border:1.5px solid #33414f;display:grid;place-items:center;font-style:normal;font-size:8px}
-.ha-step.done i{background:#3ddc97;border:0;color:#0b0f14}.ha-step.now{color:#e6edf3;font-weight:500}.ha-step.now i{border-color:#ffb020;box-shadow:inset 0 0 0 2.5px #0b0f14;background:#ffb020}
-.ha-btn{margin-top:2px;height:36px;border-radius:9px;background:#ffb020;color:#0b0f14;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px}
-.ha-tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.ha-tile{background:#121922;border:1px solid #1f2a36;border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:4px}
-.ha-tile span{font:400 8.5px 'IBM Plex Mono',monospace;color:#8b98a8}.ha-tile b{font:600 18px 'Chakra Petch',sans-serif}.ha-tile small{font-size:11px;color:#8b98a8}.ha-tile em{font-size:10px;color:#3ddc97;font-style:normal}
-.ha-cells{display:grid;grid-template-columns:repeat(15,1fr);gap:1.5px}.ha-cells i{height:4px;border-radius:1px}
-.ha-nav{margin-top:auto;border-top:1px solid #1f2a36;display:grid;grid-template-columns:repeat(4,1fr);padding:12px 0 16px;font-size:9.5px;color:#8b98a8;text-align:center}.ha-nav .on{color:#ffb020;font-weight:600}
-.ha-mini{flex-direction:row;align-items:center;gap:10px;padding:10px 12px}.ha-flag{width:26px;height:26px;border-radius:7px;background:#1a2430;display:grid;place-items:center;color:#e6edf3;font-size:13px}
-@media (max-width:620px){.hero-art{height:600px;max-width:320px}.ha-phone{right:50%;transform:translateX(50%)}.ha-term{display:none}.ha-dots{left:-8px}.ha-slab{right:0}}
+.hero{position:relative;min-height:640px;display:flex;align-items:center;background-color:#0b0f14;background-image:linear-gradient(90deg,#0b0f14 0%,rgba(11,15,20,.92) 38%,rgba(11,15,20,.55) 68%,rgba(11,15,20,.25) 100%),linear-gradient(0deg,#0b0f14 0%,rgba(11,15,20,0) 30%),url("https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1800&q=70");background-size:cover;background-position:70% 30%}
+.hero-in{max-width:1180px;width:100%;margin:0 auto;padding:96px 24px 88px;box-sizing:border-box;display:flex}
+.hero-in::after{content:"";position:absolute;right:0;top:0;width:12px;height:42%;background:#ffb020}
+@media (max-width:760px){.hero{min-height:0;background-image:linear-gradient(180deg,rgba(11,15,20,.55) 0%,rgba(11,15,20,.88) 45%,#0b0f14 100%),url("https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1800&q=70");background-position:60% 0;background-size:auto 520px;background-repeat:no-repeat}.hero-in{padding:300px 24px 56px}.hero-in::after{height:120px}}
+.cta-photo{background-color:#0b0f14;background-image:linear-gradient(90deg,#0b0f14 0%,rgba(11,15,20,.9) 45%,rgba(11,15,20,.45) 100%),url("https://images.unsplash.com/photo-1694175271713-a6e2cc378980?auto=format&fit=crop&w=1600&q=70");background-size:cover;background-position:center 30%}
+@media (max-width:760px){.cta-photo{background-image:linear-gradient(0deg,#0b0f14 30%,rgba(11,15,20,.7) 100%),url("https://images.unsplash.com/photo-1694175271713-a6e2cc378980?auto=format&fit=crop&w=1600&q=70")}}
 </style>
 </head>
 <body>
@@ -66,8 +43,9 @@ a{color:#ffb020}a:hover{color:#ffc65c}
     </div>
   </header>
 
-  <section style="max-width: 1180px; margin: 0 auto; padding: 72px 24px 64px; display: flex; flex-wrap: wrap; gap: 48px; align-items: center">
-    <div style="flex: 1 1 460px; min-width: 0; display: flex; flex-direction: column; gap: 22px">
+  <section class="hero" aria-label="Présentation">
+    <div class="hero-in">
+    <div style="flex: 0 1 600px; min-width: 0; display: flex; flex-direction: column; gap: 22px">
       <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #ffb020">// hacking éthique · en français · depuis ton téléphone</span>
       <h1 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: clamp(38px, 5.4vw, 64px); line-height: 1.02; letter-spacing: -0.02em">Apprends à trouver les failles. Pour mieux les corriger.</h1>
       <p style="margin: 0; font-size: 19px; line-height: 1.55; color: #c4ccd6; max-width: 540px">Un parcours de 30 jours, des machines à rooter et des défis CTF, directement dans ton navigateur. Pas d'ordinateur nécessaire, pas d'installation, et tout est légal.</p>
@@ -77,39 +55,6 @@ a{color:#ffb020}a:hover{color:#ffc65c}
       </div>
       <span style="font-size: 14px; color: #8b98a8">Fonctionne sur un Android d'entrée de gamme. Rien à installer.</span>
     </div>
-    <div class="hero-art" role="img" aria-label="Aperçu de l'application Rooted sur un téléphone : la mission du jour, la progression sur 30 jours et le terminal du labo">
-      <div class="ha-dots" aria-hidden="true"></div>
-      <div class="ha-slab" aria-hidden="true"></div>
-      <div class="ha-term" aria-hidden="true">
-        <div class="ha-term-bar"><i></i><i></i><i></i><span>labo · 10.10.0.11</span></div>
-        <div class="ha-term-body"><b>toi@labo:~$</b> nmap -sV 10.10.0.11
-22/tcp  open  ssh
-80/tcp  open  http
-<b>toi@labo:~$</b> curl http://10.10.0.11/
-&lt;!-- TODO : compte de test --&gt;
-<em>✓ Drapeau user · +20 pts</em></div>
-      </div>
-      <div class="ha-phone" aria-hidden="true">
-        <div class="ha-screen">
-          <div class="ha-top"><span class="ha-logo">rooted<span class="cur"></span></span><span class="ha-chip">⚡ 7 jours</span></div>
-          <div class="ha-eyebrow">// jour 12 sur 30</div>
-          <div class="ha-h">Salut JRK. Prêt pour ton premier scan ?</div>
-          <div class="ha-card">
-            <div class="ha-row"><span class="ha-amber">MISSION DU JOUR</span><span>≈ 45 min</span></div>
-            <div class="ha-title">Premier scan avec Nmap</div>
-            <div class="ha-step done"><i>✓</i><s>Théorie · ports</s></div>
-            <div class="ha-step now"><i></i>Pratique · scanner</div>
-            <div class="ha-step"><i></i>Validation</div>
-            <div class="ha-btn">Continuer la mission →</div>
-          </div>
-          <div class="ha-tiles">
-            <div class="ha-tile"><span>PROGRESSION</span><b>11<small>/30</small></b><div class="ha-cells"><i style="background:#ffb020"></i><i style="background:#ffb020"></i><i style="background:#ffb020"></i><i style="background:#ffb020"></i><i style="background:#ffb020"></i><i style="background:#ffb020"></i><i style="background:#ffb020"></i><i style="background:#ffb020"></i><i style="background:#ffb020"></i><i style="background:#ffb020"></i><i style="background:#ffb020"></i><i style="background:#5a4a26"></i><i style="background:#1f2a36"></i><i style="background:#1f2a36"></i><i style="background:#1f2a36"></i><i style="background:#1f2a36"></i><i style="background:#1f2a36"></i><i style="background:#1f2a36"></i><i style="background:#1f2a36"></i><i style="background:#1f2a36"></i><i style="background:#1f2a36"></i><i style="background:#1f2a36"></i><i style="background:#1f2a36"></i><i style="background:#1f2a36"></i><i style="background:#1f2a36"></i><i style="background:#1f2a36"></i><i style="background:#1f2a36"></i><i style="background:#1f2a36"></i><i style="background:#1f2a36"></i><i style="background:#1f2a36"></i></div></div>
-            <div class="ha-tile"><span>SCORE</span><b>120<small> pts</small></b><em>Apprenti</em></div>
-          </div>
-          <div class="ha-card ha-mini"><span class="ha-flag">⚑</span><div><div class="ha-title" style="font-size:12.5px">Défi du jour · Ave César</div><div class="ha-row" style="justify-content:start">CRYPTO · 15 PTS · 5 MIN</div></div></div>
-          <div class="ha-nav"><span class="on">Accueil</span><span>Parcours</span><span>Labo</span><span>Profil</span></div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -215,14 +160,17 @@ a{color:#ffb020}a:hover{color:#ffc65c}
     </div>
   </section>
 
-  <section style="max-width: 1180px; margin: 0 auto; padding: 80px 24px; display: flex; flex-direction: column; align-items: flex-start; gap: 20px">
+  <section class="cta-photo" style="border-top: 1px solid #1f2a36">
+    <div style="max-width: 1180px; margin: 0 auto; padding: 120px 24px; display: flex; flex-direction: column; align-items: flex-start; gap: 20px">
     <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: clamp(32px, 4vw, 48px); line-height: 1.05; max-width: 760px">Ton premier scan est à 20 secondes d'ici.</h2>
     <a href="app.html" style="height: 56px; padding: 0 26px; border-radius: 12px; background: #ffb020; color: #0b0f14; display: inline-flex; align-items: center; font-weight: 600; font-size: 17px; text-decoration: none">Créer mon parcours</a>
+    </div>
   </section>
 
   <footer style="border-top: 1px solid #1f2a36">
     <div style="max-width: 1180px; margin: 0 auto; padding: 24px; display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; font-size: 14px; color: #8b98a8">
       <span>rooted · plateforme d'apprentissage du hacking éthique</span>
+      <span>Photos : <a href="https://unsplash.com/photos/woman-and-man-sitting-in-front-of-monitor-IgUR1iX0mqM" style="color:#8b98a8">Disruptxn</a> et <a href="https://unsplash.com/photos/a-man-with-a-laptop-in-his-hand-DeqswsZEO3Y" style="color:#8b98a8">Seth Ebenezer Tetteh</a> sur Unsplash</span>
       <span><a href="docs/charte-graphique.md" style="color:#8b98a8">Charte graphique</a> · <a href="docs/Programme_30_jours_Hacking_Ethique.pdf" style="color:#8b98a8">Programme 30 jours (PDF)</a> · <a href="docs/Cours_Hacking_Ethique_Fondamentaux.pdf" style="color:#8b98a8">Cours (PDF)</a></span>
     </div>
   </footer>
